@@ -1,0 +1,43 @@
+{
+    "name": "ciebit/news",
+    "description": "Representação de notícias que podem conter uma imagem de capa",
+    "keywords": ["notícias", "news", "story", "article"],
+    "type": "library",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/ciebit/news/issues",
+        "source": "https://github.com/ciebit/news"
+    },
+    "authors": [
+        {
+            "name": "Johnny Saymon",
+            "email": "saymon@ciebit.com",
+            "homepage": "http://saymon.ciebit.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Maike Negreiros",
+            "email": "maike_jbe@hotmail.com",
+            "homepage": "http://maikenegreiros.me",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ciebit\\News\\": "sources/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ciebit\\News\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.1",
+        "myclabs/php-enum": "^1.6.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5",
+        "phpunit/dbunit": "^3.0"
+    }
+}
