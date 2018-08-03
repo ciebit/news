@@ -5,7 +5,7 @@ use ArrayIterator;
 use ArrayObject;
 use Countable;
 
-class Collection implements Countable
+class Collection implements Countable, IteratorAggregate
 {
     private $newsList; #:ArrayObject
 
