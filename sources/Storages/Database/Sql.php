@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace Ciebit\News\Storages\Database;
 
 use Ciebit\News\Collection;
-use Ciebit\News\Builders\Context as Builder;
+use Ciebit\News\Builders\FromArray as Builder;
 use Ciebit\News\News;
 use Ciebit\News\Status;
 use Ciebit\News\Storages\Storage;
