@@ -7,11 +7,11 @@ use Ciebit\News\Builders\Context as Builder;
 use Ciebit\News\News;
 use Ciebit\News\Status;
 use Ciebit\News\Storages\Storage;
-use Ciebit\News\Storages\Database\DatabaseSqlFilters;
+use Ciebit\News\Storages\Database\SqlFilters;
 use Exception;
 use PDO;
 
-class DatabaseSql extends DatabaseSqlFilters implements DatabaseInterface
+class Sql extends SqlFilters implements Database
 {
     private $pdo; #PDO
     private $table; #string

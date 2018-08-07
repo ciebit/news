@@ -5,7 +5,7 @@ namespace Ciebit\Files\Storages\Database;
 use PDOStatement;
 use function implode;
 
-abstract class DatabaseSqlFilters
+abstract class SqlFilters
 {
     private $bindList; #Array
     private $filtersSql; #Array

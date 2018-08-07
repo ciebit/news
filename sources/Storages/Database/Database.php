@@ -5,7 +5,7 @@ use Ciebit\News\News;
 use Ciebit\News\Collection;
 use Ciebit\News\Storages\Storage;
 
-interface DatabaseInterface extends Storage
+interface Database extends Storage
 {
     // public function delete(News $News): self;
 
