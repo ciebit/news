@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Ciebit\News\Builders\Strategies;
+namespace Ciebit\News\Builders;
 
 use Ciebit\News\News;
 use Ciebit\News\Status;
@@ -9,7 +9,7 @@ use Ciebit\Stories\Builders\FromArray as StoryBuilder;
 use Ciebit\Files\Images\Builders\FromArray as ImageBuilder;
 use DateTime;
 
-class FromArray implements Strategy
+class FromArray implements Builder
 {
     private $data; #:array
 
