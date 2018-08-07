@@ -22,8 +22,7 @@ class FromArray implements Builder
     public function build(): News
     {
         if (
-            ! is_array($this->data) OR
-            ! isset($this->data['story_id'])
+            ! is_array($this->data)
         ) {
             throw new Exception('ciebit.news.builders.invalid', 3);
         }
