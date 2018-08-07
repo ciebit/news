@@ -1,20 +1,11 @@
 <?php
 namespace Ciebit\News\Builders;
 
-use Ciebit\News\Builders\Strategies\Strategy;
 use Ciebit\News\News;
 
-class Builder
+interface Builder
 {
-    private $strategy;
+    public function setData($data): self;
 
-    public function __construct(Strategy $strategy)
-    {
-        $this->strategy = $strategy;
-    }
-
-    public function build(): News
-    {
-        return $this->strategy->build();
-    }
+    public function build(): News;
 }
