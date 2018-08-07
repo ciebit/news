@@ -47,7 +47,7 @@ class FromArray implements Strategy
         $news = new News(
             $story,
             $image,
-            $this->data['status']
+            new Status($this->data['status'])
         );
         return $news;
     }
