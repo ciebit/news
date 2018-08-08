@@ -87,7 +87,24 @@ class Sql extends SqlFilters implements Database
         return '
             `news`.`id`,
             `news`.`story_id`,
+            `news`.`story_title`,
+            `news`.`story_summary`,
+            `news`.`story_body`,
+            `news`.`story_datetime`,
+            `news`.`story_uri`,
+            `news`.`story_views`,
+            `news`.`story_status`,
             `news`.`cover_id`,
+            `news`.`cover_name`,
+            `news`.`cover_description`,
+            `news`.`cover_uri`,
+            `news`.`cover_extension`,
+            `news`.`cover_size`,
+            `news`.`cover_views`,
+            `news`.`cover_mimetype`,
+            `news`.`cover_date_hour`,
+            `news`.`cover_metadata`,
+            `news`.`cover_status`,
             `news`.`status`
         ';
     }
