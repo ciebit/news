@@ -55,7 +55,41 @@ class Sql extends SqlFilters implements Database
         if ($newsData == false) {
             return null;
         }
-        return (new Builder)->setData($newsData)->build();
+
+        $standarsizedData = $this->standardizeData($newsData);
+        return (new Builder)->setData($standarsizedData)->build();
+    }
+
+    private function standardizeData(array $data): array
+    {
+        return [
+            'id' => $data['id'],
+            'story' => [
+                'id' => $data['story_id'],
+                'title' => $data['story_title'],
+                'summary' => $data['story_summary'],
+                'body' => $data['story_body'],
+                'datetime' => $data['story_datetime'],
+                'uri' => $data['story_uri'],
+                'views' => $data['story_views'],
+                'status' => $data['story_status']
+
+            ],
+            'image' => [
+                'id' => $data['cover_id'],
+                'name' => $data['cover_name'],
+                'description' => $data['cover_description'],
+                'uri' => $data['cover_uri'],
+                'extension' => $data['cover_extension'],
+                'size' => $data['cover_size'],
+                'views' => $data['cover_views'],
+                'mimetype' => $data['cover_mimetype'],
+                'date_hour' => $data['cover_date_hour'],
+                'metadata' => $data['cover_metadata'],
+                'status' => $data['cover_status']
+            ],
+            'status' => $data['status']
+        ];
     }
 
     public function getAll(): Collection
@@ -74,7 +108,8 @@ class Sql extends SqlFilters implements Database
         $collection = new Collection;
         $builder = new Builder;
         while ($news = $statement->fetch(PDO::FETCH_ASSOC)) {
-            $builder->setData($news);
+            $standarsizedData = $this->standardizeData($news);
+            $builder->setData($standarsizedData);
             $collection->add(
                 $builder->build()
             );
