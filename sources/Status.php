@@ -9,4 +9,5 @@ class Status extends Enum
     const ANALYZE = 2;
     const DRAFT = 1;
     const TRASH = 4;
+    const INACTIVE = 5;
 }
