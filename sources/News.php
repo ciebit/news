@@ -12,10 +12,9 @@ class News
     private $image; #:?Image
     private $status; #:Status
 
-    public function __construct(Story $story, Image $image = null, Status $status)
+    public function __construct(Story $story, Status $status)
     {
         $this->id = 0;
-        $this->image = $image;
         $this->status = $status;
         $this->story = $story;
     }
@@ -43,6 +42,12 @@ class News
     public function setId(int $id): self
     {
         $this->id = $id;
+        return $this;
+    }
+
+    public function setImage(Image $image): self
+    {
+        $this->image = $image;
         return $this;
     }
 }

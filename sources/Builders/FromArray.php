@@ -23,22 +23,23 @@ class FromArray implements Builder
     {
         if (
             ! is_array($this->data) OR
-            ! $this->data['story'] OR
-            ! $this->data['image'] OR
-            ! $this->data['id']
+            ! $this->data['story']
         ) {
             throw new Exception('ciebit.news.builders.invalid', 3);
         }
         $story = (new StoryBuilder)->setData($this->data['story'])->build();
-        $image = (new ImageBuilder)->setData($this->data['image'])->build();
         $status = $this->data['status'] ? new Status((int) $this->data['status']) : Status::DRAFT();
 
-        $news = (new News(
+        $news = new News(
             $story,
-            $image,
             $status
-        ))
-        ->setId((int) $this->data['id']);
+        );
+        
+        $this->data['id'] && $news->setId((int) $this->data['id']);
+       $this->data['image'] && $news->setImage(
+           (new ImageBuilder)->setData($this->data['image'])->build()
+        );
+        
 
         return $news;
     }
