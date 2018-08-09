@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Ciebit\Files\Storages\Database;
+namespace Ciebit\News\Storages\Database;
 
 use PDOStatement;
 use function implode;
