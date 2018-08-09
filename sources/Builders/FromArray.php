@@ -31,11 +31,13 @@ class FromArray implements Builder
         $story = (new StoryBuilder)->setData($this->data['story'])->build();
         $image = (new ImageBuilder)->setData($this->data['image'])->build();
 
-        $news = new News(
+        $news = (new News(
             $story,
             $image,
-            new Status($this->data['status'])
-        );
+            new Status((int) $this->data['status'])
+        ))
+        ->setId((int) $this->data['id']);
+
         return $news;
     }
 }
