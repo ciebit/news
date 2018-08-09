@@ -30,11 +30,12 @@ class FromArray implements Builder
         }
         $story = (new StoryBuilder)->setData($this->data['story'])->build();
         $image = (new ImageBuilder)->setData($this->data['image'])->build();
+        $status = $this->data['status'] ? new Status((int) $this->data['status']) : Status::DRAFT();
 
         $news = (new News(
             $story,
             $image,
-            new Status((int) $this->data['status'])
+            $status
         ))
         ->setId((int) $this->data['id']);
 
