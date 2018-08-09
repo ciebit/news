@@ -13,7 +13,7 @@ class FromArray implements Builder
 {
     private $data; #:array
 
-    public function setData(array $data): self
+    public function setData(array $data): Builder
     {
         $this->data = $data;
         return $this;
