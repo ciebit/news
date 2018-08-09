@@ -7,15 +7,21 @@ use Ciebit\Stories\Story;
 
 class News
 {
+    private $id; #:int
     private $story; #:Story
     private $image; #:?Image
     private $status; #:Status
 
-    public function __construct(Story $story, Image $image = null, Status $status)
+    public function __construct(Story $story, Status $status)
     {
-        $this->image = $image;
+        $this->id = 0;
         $this->status = $status;
         $this->story = $story;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getCover(): ?Image
@@ -31,5 +37,17 @@ class News
     public function getStory(): Story
     {
         return $this->story;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function setImage(Image $image): self
+    {
+        $this->image = $image;
+        return $this;
     }
 }

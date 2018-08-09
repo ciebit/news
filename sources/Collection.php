@@ -4,6 +4,7 @@ namespace Ciebit\News;
 use ArrayIterator;
 use ArrayObject;
 use Countable;
+use IteratorAggregate;
 
 class Collection implements Countable, IteratorAggregate
 {

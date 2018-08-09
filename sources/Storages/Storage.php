@@ -1,15 +1,15 @@
 <?php
-namespace Ciebit\Files\Storages;
+namespace Ciebit\News\Storages;
 
-use Ciebit\Files\Collection;
-use Ciebit\Files\File;
-use Ciebit\Files\Status;
+use Ciebit\News\Collection;
+use Ciebit\News\News;
+use Ciebit\News\Status;
 
 interface Storage
 {
     public function addFilterById(int $id, string $operator = '='): self;
     public function addFilterByStatus(Status $status, string $operator = '='): self;
-    public function get(): ?File;
+    public function get(): ?News;
     public function getAll(): Collection;
     public function setStartingLine(int $lineInit): self;
     public function setTotalLines(int $total): self;
