@@ -36,7 +36,7 @@ class FromArray implements Builder
         );
         
         $this->data['id'] && $news->setId((int) $this->data['id']);
-       $this->data['image'] && $news->setImage(
+        $this->data['image'] && $news->setImage(
            (new ImageBuilder)->setData($this->data['image'])->build()
         );
         
