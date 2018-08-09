@@ -7,7 +7,6 @@ use Ciebit\News\Builders\FromArray as Builder;
 use Ciebit\News\News;
 use Ciebit\News\Status;
 use Ciebit\News\Storages\Storage;
-use Ciebit\News\Storages\Database\SqlFilters;
 use Exception;
 use PDO;
 
@@ -19,7 +18,7 @@ class Sql extends SqlFilters implements Database
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->table = 'cb_news';
+        $this->table = 'cb_news_complete';
     }
 
     public function addFilterById(int $id, string $operator = '='): Storage
