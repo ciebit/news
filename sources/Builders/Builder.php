@@ -5,7 +5,7 @@ use Ciebit\News\News;
 
 interface Builder
 {
-    public function setData($data): self;
+    public function setData(array $data): self;
 
     public function build(): News;
 }
