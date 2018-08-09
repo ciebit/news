@@ -24,7 +24,8 @@ class FromArray implements Builder
         if (
             ! is_array($this->data) OR
             ! $this->data['story'] OR
-            ! $this->data['image']
+            ! $this->data['image'] OR
+            ! $this->data['id']
         ) {
             throw new Exception('ciebit.news.builders.invalid', 3);
         }
