@@ -29,6 +29,12 @@
             <value>1</value>
             <value>4</value>
         </row>
+        <row>
+            <value>5</value>
+            <value>5</value>
+            <value>1</value>
+            <value>5</value>
+        </row>
     </table>
 
     <table name="cb_files">
@@ -100,6 +106,20 @@
             <value>{}</value>
             <value>4</value>
         </row>
+        <row>
+            <value>5</value>
+            <value>Title File 5</value>
+            <value>Legenda 5</value>
+            <value>Descrição 5</value>
+            <value>title-file-5.jpg</value>
+            <value>jpg</value>
+            <value>40</value>
+            <value>5058</value>
+            <value>application/json</value>
+            <value>2018-08-14</value>
+            <value>{}</value>
+            <value>4</value>
+        </row>
     </table>
 
     <table name="cb_stories">
@@ -150,6 +170,16 @@
             <value>title-new-4</value>
             <value>159</value>
             <value>4</value>
+        </row>
+        <row>
+            <value>5</value>
+            <value>New Five Title</value>
+            <value>New five summary</value>
+            <value>New five text</value>
+            <value>2018-08-13 10:01:00</value>
+            <value>title-new-5</value>
+            <value>1</value>
+            <value>3</value>
         </row>
     </table>
 </dataset>

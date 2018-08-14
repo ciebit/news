@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e2c2e7791618bbe026154793b0882f3",
+    "content-hash": "0d4bd7b67f109497d430e551371ce6bc",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.64.8",
+            "version": "3.64.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "14a8d1499450a755d6c1f147ea76eabdc1666a9d"
+                "reference": "4f34eafb0da35ecc6ab0dddd4946a233aa03a280"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/14a8d1499450a755d6c1f147ea76eabdc1666a9d",
-                "reference": "14a8d1499450a755d6c1f147ea76eabdc1666a9d",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4f34eafb0da35ecc6ab0dddd4946a233aa03a280",
+                "reference": "4f34eafb0da35ecc6ab0dddd4946a233aa03a280",
                 "shasum": ""
             },
             "require": {
@@ -84,20 +84,20 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-08-08T20:28:00+00:00"
+            "time": "2018-08-13T21:42:40+00:00"
         },
         {
             "name": "ciebit/files",
-            "version": "v0.1.0",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ciebit/files.git",
-                "reference": "ebb32c9ecf596d8f2bdf596be637215e314f2d14"
+                "reference": "940341d28e184aa8a34c01fe02e556223db0414c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ciebit/files/zipball/ebb32c9ecf596d8f2bdf596be637215e314f2d14",
-                "reference": "ebb32c9ecf596d8f2bdf596be637215e314f2d14",
+                "url": "https://api.github.com/repos/ciebit/files/zipball/940341d28e184aa8a34c01fe02e556223db0414c",
+                "reference": "940341d28e184aa8a34c01fe02e556223db0414c",
                 "shasum": ""
             },
             "require": {
@@ -139,20 +139,20 @@
                 "files",
                 "imagens"
             ],
-            "time": "2018-08-07T19:40:54+00:00"
+            "time": "2018-08-13T19:09:36+00:00"
         },
         {
             "name": "ciebit/stories",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ciebit/stories.git",
-                "reference": "a5e1549df5cedcd07161b7fba289edecf2eae335"
+                "reference": "928d77d84d66755ebc9575ff2503564627987247"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ciebit/stories/zipball/a5e1549df5cedcd07161b7fba289edecf2eae335",
-                "reference": "a5e1549df5cedcd07161b7fba289edecf2eae335",
+                "url": "https://api.github.com/repos/ciebit/stories/zipball/928d77d84d66755ebc9575ff2503564627987247",
+                "reference": "928d77d84d66755ebc9575ff2503564627987247",
                 "shasum": ""
             },
             "require": {
@@ -188,7 +188,7 @@
                 "notícias",
                 "story"
             ],
-            "time": "2018-08-07T20:24:46+00:00"
+            "time": "2018-08-14T13:41:42+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

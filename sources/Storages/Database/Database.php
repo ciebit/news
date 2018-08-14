@@ -7,11 +7,7 @@ use Ciebit\News\Storages\Storage;
 
 interface Database extends Storage
 {
-    // public function delete(News $News): self;
+    public function setTableGet(string $name): self;
 
-    public function get(): ?News;
-
-    public function getAll(): Collection;
-
-    // public function save(News $News): self;
+    public function setTableSave(string $name): self;
 }
