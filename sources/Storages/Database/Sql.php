@@ -13,12 +13,22 @@ use PDO;
 class Sql extends SqlFilters implements Database
 {
     private $pdo; #PDO
-    private $table; #string
+    private $tableGet; #string
+    private $tableSave; #string
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->table = 'cb_news_complete';
+        $this->tableGet = 'cb_news_complete';
+        $this->tableSave = 'cb_news';
+    }
+
+    public function addFilterByBody(string $body, string $operator = '='): Storage
+    {
+        $key = 'body';
+        $sql = "`news`.`story_body` {$operator} :{$key}";
+        $this->addFilter($key, $sql, PDO::PARAM_STR, $body);
+        return $this;
     }
 
     public function addFilterById(int $id, string $operator = '='): Storage
@@ -37,12 +47,20 @@ class Sql extends SqlFilters implements Database
         return $this;
     }
 
+    public function addFilterByTitle(string $title, string $operator = '='): Storage
+    {
+        $key = 'title';
+        $sql = "`news`.`story_title` {$operator} :{$key}";
+        $this->addFilter($key, $sql, PDO::PARAM_STR, $title);
+        return $this;
+    }
+
     public function get(): ?News
     {
         $statement = $this->pdo->prepare("
-            SELECT SQL_CALC_FOUND_ROWS
+            SELECT
             {$this->getFields()}
-            FROM {$this->table} as `news`
+            FROM {$this->tableGet} as `news`
             WHERE {$this->generateSqlFilters()}
             LIMIT 1
         ");
@@ -96,7 +114,7 @@ class Sql extends SqlFilters implements Database
         $statement = $this->pdo->prepare("
             SELECT SQL_CALC_FOUND_ROWS
             {$this->getFields()}
-            FROM {$this->table} as `news`
+            FROM {$this->tableGet} as `news`
             WHERE {$this->generateSqlFilters()}
             {$this->generateSqlLimit()}
         ");
@@ -154,9 +172,15 @@ class Sql extends SqlFilters implements Database
         return $this;
     }
 
-    public function setTable(string $name): self
+    public function setTableGet(string $name): Database
     {
-        $this->table = $name;
+        $this->tableGet = $name;
+        return $this;
+    }
+
+    public function setTableSave(string $name): Database
+    {
+        $this->tableSave = $name;
         return $this;
     }
 
