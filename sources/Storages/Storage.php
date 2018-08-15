@@ -15,6 +15,8 @@ interface Storage
 
     public function addFilterByTitle(string $title, string $operator = '='): self;
 
+    public function addFilterByUri(string $uri, string $operator = '='): self;
+
     public function get(): ?News;
 
     public function getAll(): Collection;

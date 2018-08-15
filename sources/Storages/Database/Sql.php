@@ -55,6 +55,14 @@ class Sql extends SqlFilters implements Database
         return $this;
     }
 
+    public function addFilterByUri(string $uri, string $operator = '='): Storage
+    {
+        $key = 'uri';
+        $sql = "`news`.`story_uri` {$operator} :{$key}";
+        $this->addFilter($key, $sql, PDO::PARAM_STR, $uri);
+        return $this;
+    }
+
     public function get(): ?News
     {
         $statement = $this->pdo->prepare("
