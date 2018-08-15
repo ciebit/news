@@ -110,4 +110,12 @@ class DatabaseSqlTest extends Connection
         $news = $database->get();
         $this->assertEquals(5, $news->getId());
     }
+
+    public function testGetFilterByUri(): void
+    {
+        $database = $this->getDatabase();
+        $database->addFilterByUri('title-new-3');
+        $news = $database->get();
+        $this->assertEquals(3, $news->getId());
+    }
 }
