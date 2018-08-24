@@ -173,7 +173,7 @@ class Sql extends SqlFilters implements Database
 
     public function getTotalRows(): int
     {
-        return $this->pdo->query('SELECT FOUND_ROWS()')->fetchColumn();
+        return (int) $this->pdo->query('SELECT FOUND_ROWS()')->fetchColumn();
     }
 
     public function setStartingLine(int $lineInit): Storage
