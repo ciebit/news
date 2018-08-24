@@ -118,4 +118,12 @@ class DatabaseSqlTest extends Connection
         $news = $database->get();
         $this->assertEquals(3, $news->getId());
     }
+
+    public function testGetAllByOrderDesc(): void
+    {
+        $database = $this->getDatabase();
+        $database->orderBy('id', 'DESC');
+        $news = $database->get();
+        $this->assertEquals(5, $news->getId());
+    }
 }
