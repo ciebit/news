@@ -70,6 +70,7 @@ class Sql extends SqlFilters implements Database
             {$this->getFields()}
             FROM {$this->tableGet} as `news`
             WHERE {$this->generateSqlFilters()}
+            {$this->generateOrder()}
             LIMIT 1
         ");
         $this->bind($statement);
@@ -124,6 +125,7 @@ class Sql extends SqlFilters implements Database
             {$this->getFields()}
             FROM {$this->tableGet} as `news`
             WHERE {$this->generateSqlFilters()}
+            {$this->generateOrder()}
             {$this->generateSqlLimit()}
         ");
         $this->bind($statement);
