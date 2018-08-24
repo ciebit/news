@@ -90,7 +90,7 @@ abstract class SqlFilters
         return $this;
     }
 
-    public function orderBy(string $column, string $order = ""): self
+    public function orderBy(string $column, string $order = "ASC"): self
     {
         $this->orderBy[] = [$column, $order];
         return $this;
