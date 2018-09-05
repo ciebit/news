@@ -1,6 +1,7 @@
 <?php
 namespace Ciebit\News\Tests\Storages;
 
+use Ciebit\Labels\Storages\Database\Sql as LabelsStorage;
 use Ciebit\News\Collection;
 use Ciebit\News\Status;
 use Ciebit\News\News;
@@ -11,7 +12,9 @@ class DatabaseSqlTest extends Connection
 {
     public function getDatabase(): DatabaseSql
     {
-        return new DatabaseSql($this->getPdo());
+        $pdo = $this->getPdo();
+        $labelStorage = new LabelsStorage($pdo);
+        return new DatabaseSql($pdo, $labelStorage);
     }
 
     public function testGet(): void
