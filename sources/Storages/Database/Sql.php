@@ -25,6 +25,7 @@ class Sql extends SqlFilters implements Database
 {
     private $pdo; #PDO
     private $labelStorage; #LabelStorage
+    private $tableLabelAssociation; #: string
     private $tableGet; #string
     private $tableSave; #string
 
@@ -33,6 +34,7 @@ class Sql extends SqlFilters implements Database
         $this->pdo = $pdo;
         $this->labelStorage = $labelStorage;
         $this->tableGet = 'cb_news_complete';
+        $this->tableLabelAssociation = 'cb_news_labels';
         $this->tableSave = 'cb_news';
     }
 
@@ -49,6 +51,17 @@ class Sql extends SqlFilters implements Database
         $key = 'id';
         $sql = "`news`.`id` $operator :{$key}";
         $this->addfilter($key, $sql, PDO::PARAM_INT, $id);
+        return $this;
+    }
+
+    public function addFilterByLabelId(int $id, string $operator = '='): Storage
+    {
+        $key = 'label_id';
+        $sql = "`labels`.`label_id` $operator :{$key}";
+        $this->addSqlJoin(
+            "INNER JOIN `{$this->tableLabelAssociation}` AS `labels`
+            ON `labels`.`news_id` = `news`.`id`"
+        )->addfilter($key, $sql, PDO::PARAM_INT, $id);
         return $this;
     }
 
@@ -82,6 +95,7 @@ class Sql extends SqlFilters implements Database
             SELECT
             {$this->getFields()}
             FROM {$this->tableGet} as `news`
+            {$this->generateSqlJoin()}
             WHERE {$this->generateSqlFilters()}
             {$this->generateOrder()}
             LIMIT 1
@@ -143,6 +157,7 @@ class Sql extends SqlFilters implements Database
             SELECT SQL_CALC_FOUND_ROWS
             {$this->getFields()}
             FROM {$this->tableGet} as `news`
+            {$this->generateSqlJoin()}
             WHERE {$this->generateSqlFilters()}
             {$this->generateOrder()}
             {$this->generateSqlLimit()}
@@ -235,6 +250,12 @@ class Sql extends SqlFilters implements Database
     public function setTableGet(string $name): Database
     {
         $this->tableGet = $name;
+        return $this;
+    }
+
+    public function setTableLabelAssociation(string $name): Database
+    {
+        $this->tableLabelAssociation = $name;
         return $this;
     }
 

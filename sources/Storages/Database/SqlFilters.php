@@ -10,6 +10,7 @@ abstract class SqlFilters
     private $bindList; #Array
     private $filtersSql; #Array
     private $limit; #int
+    private $joinSql; #: array
     private $offset; #int
     private $orderBy; #Array
 
@@ -33,6 +34,12 @@ abstract class SqlFilters
     protected function addSqlFilter(string $sql): self
     {
         $this->filtersSql[] = $sql;
+        return $this;
+    }
+
+    protected function addSqlJoin(string $sql): self
+    {
+        $this->joinSql[] = $sql;
         return $this;
     }
 
@@ -65,6 +72,15 @@ abstract class SqlFilters
         return $sql;
     }
 
+    protected function generateSqlJoin(): string
+    {
+        if (! is_array($this->joinSql)) {
+            return '';
+        }
+
+        return implode(' ', $this->joinSql);
+    }
+
     protected function generateOrder(): string
     {
         if (empty($this->orderBy)) {
@@ -73,7 +89,7 @@ abstract class SqlFilters
         $array = array_map(function($item) {
             return implode(" ", $item);
         }, $this->orderBy);
-          
+
         $sql = "ORDER BY " . implode(', ', $array);
         return $sql;
     }

@@ -11,7 +11,7 @@ CREATE TABLE `cb_news` (
 
 CREATE TABLE `cb_news_labels` (
   `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `new_id` int(5) UNSIGNED NOT NULL,
+  `news_id` int(5) UNSIGNED NOT NULL,
   `label_id` int(5) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='version:2.0';
@@ -39,7 +39,7 @@ SELECT
     `files`.`date_hour` as `cover_date_hour`,
     `files`.`metadata` as `cover_metadata`,
     `files`.`status` as `cover_status`,
-    (SELECT GROUP_CONCAT(`label_id`) FROM `cb_news_labels` WHERE `new_id` = `news`.`id`) as `labels_id`
+    (SELECT GROUP_CONCAT(`label_id`) FROM `cb_news_labels` WHERE `news_id` = `news`.`id`) as `labels_id`
 FROM `cb_news` AS `news`
 INNER JOIN `cb_stories` AS `stories`
 	ON `stories`.`id` = `news`.`story_id`

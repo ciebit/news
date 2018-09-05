@@ -68,7 +68,7 @@
 
     <table name="cb_news_labels">
         <column>id</column>
-        <column>new_id</column>
+        <column>news_id</column>
         <column>label_id</column>
         <row>
             <value>1</value>
