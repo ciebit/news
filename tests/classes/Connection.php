@@ -1,8 +1,10 @@
 <?php
 namespace Ciebit\News\Tests;
+
 use PDO;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\DbUnit\TestCaseTrait;
+
 abstract class Connection extends TestCase
 {
     use TestCaseTrait;
