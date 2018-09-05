@@ -1,8 +1,10 @@
 <?php
 namespace Ciebit\News\Tests;
+
 use PDO;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\DbUnit\TestCaseTrait;
+
 abstract class Connection extends TestCase
 {
     use TestCaseTrait;
@@ -14,7 +16,7 @@ abstract class Connection extends TestCase
         if ($this->settings != null) {
             return $this->settings;
         }
-        $this->settings = parse_ini_file(__DIR__.'/settings.ini', true);
+        $this->settings = parse_ini_file(__DIR__.'/../settings.ini', true);
         return $this->settings;
     }
     public function getPdo(): PDO
@@ -37,6 +39,6 @@ abstract class Connection extends TestCase
     }
     public function getDataSet()
     {
-        return $this->createXMLDataSet(__DIR__.'/data.xml');
+        return $this->createXMLDataSet(__DIR__.'/../data.xml');
     }
 }

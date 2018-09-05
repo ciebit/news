@@ -9,5 +9,7 @@ interface Database extends Storage
 {
     public function setTableGet(string $name): self;
 
+    public function setTableLabelAssociation(string $name): self;
+
     public function setTableSave(string $name): self;
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Ciebit\News\Tests\Storages;
 
+use Ciebit\Labels\Storages\Database\Sql as LabelsStorage;
 use Ciebit\News\Collection;
 use Ciebit\News\Status;
 use Ciebit\News\News;
@@ -11,7 +12,9 @@ class DatabaseSqlTest extends Connection
 {
     public function getDatabase(): DatabaseSql
     {
-        return new DatabaseSql($this->getPdo());
+        $pdo = $this->getPdo();
+        $labelStorage = new LabelsStorage($pdo);
+        return new DatabaseSql($pdo, $labelStorage);
     }
 
     public function testGet(): void
@@ -78,6 +81,31 @@ class DatabaseSqlTest extends Connection
         $database->addFilterById($id+0);
         $news = $database->get();
         $this->assertEquals($id, $news->getId());
+    }
+
+    public function testGetFilterByIds(): void
+    {
+        $database = $this->getDatabase();
+        $database->addFilterByIds('=', 2, 3);
+        $news = $database->getAll();
+        $this->assertCount(2, $news);
+        $this->assertEquals(2, $news->getById(2)->getId());
+        $this->assertEquals(3, $news->getById(3)->getId());
+    }
+
+    public function testGetFilterByLabelId(): void
+    {
+        $id = 2;
+        $database = $this->getDatabase();
+        $database->addFilterByLabelId($id+0);
+        $news = $database->get();
+        $this->assertEquals(2, $news->getId());
+        $this->assertEquals(2, $news->getLabels()->getArrayObject()->offsetGet(0)->getId());
+
+        $database = $this->getDatabase();
+        $database->addFilterByLabelId($id+0);
+        $news = $database->getAll();
+        $this->assertCount(1, $news);
     }
 
     public function testGetFilterByStatus(): void

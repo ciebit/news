@@ -26,6 +26,17 @@ class Collection implements Countable, IteratorAggregate
         return clone $this->newsList;
     }
 
+    public function getById(int $id): ?News
+    {
+        foreach ($this->getIterator() as $news) {
+            if ($news->getId() == $id) {
+                return $news;
+            }
+        }
+
+        return null;
+    }
+
     public function getIterator(): ArrayIterator
     {
         return $this->newsList->getIterator();

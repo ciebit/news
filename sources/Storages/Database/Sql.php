@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace Ciebit\News\Storages\Database;
 
+use Ciebit\Labels\Collection as LabelsCollection;
+use Ciebit\Labels\Storages\Storage as LabelStorage;
 use Ciebit\News\Collection;
 use Ciebit\News\Builders\FromArray as Builder;
 use Ciebit\News\News;
@@ -10,16 +12,30 @@ use Ciebit\News\Storages\Storage;
 use Exception;
 use PDO;
 
+use function array_column;
+use function array_filter;
+use function array_map;
+use function array_merge;
+use function array_unique;
+use function explode;
+use function is_aray;
+use function intval;
+
 class Sql extends SqlFilters implements Database
 {
+    static private $counterKey = 0;
+    private $labelStorage; #LabelStorage
     private $pdo; #PDO
+    private $tableLabelAssociation; #: string
     private $tableGet; #string
     private $tableSave; #string
 
-    public function __construct(PDO $pdo)
+    public function __construct(PDO $pdo, LabelStorage $labelStorage)
     {
         $this->pdo = $pdo;
+        $this->labelStorage = $labelStorage;
         $this->tableGet = 'cb_news_complete';
+        $this->tableLabelAssociation = 'cb_news_labels';
         $this->tableSave = 'cb_news';
     }
 
@@ -36,6 +52,32 @@ class Sql extends SqlFilters implements Database
         $key = 'id';
         $sql = "`news`.`id` $operator :{$key}";
         $this->addfilter($key, $sql, PDO::PARAM_INT, $id);
+        return $this;
+    }
+
+    public function addFilterByIds(string $operator, int ...$ids): Storage
+    {
+         $keyPrefix = 'id';
+         $keys = [];
+         $operator = $operator == '!=' ? 'NOT IN' : 'IN';
+         foreach ($ids as $id) {
+             $key = $keyPrefix . self::$counterKey++;
+             $this->addBind($key, PDO::PARAM_INT, $id);
+             $keys[] = $key;
+         }
+         $keysStr = implode(', :', $keys);
+         $this->addSqlFilter("`news`.`id` {$operator} (:{$keysStr})");
+         return $this;
+    }
+
+    public function addFilterByLabelId(int $id, string $operator = '='): Storage
+    {
+        $key = 'label_id';
+        $sql = "`labels`.`label_id` $operator :{$key}";
+        $this->addSqlJoin(
+            "INNER JOIN `{$this->tableLabelAssociation}` AS `labels`
+            ON `labels`.`news_id` = `news`.`id`"
+        )->addfilter($key, $sql, PDO::PARAM_INT, $id);
         return $this;
     }
 
@@ -69,6 +111,7 @@ class Sql extends SqlFilters implements Database
             SELECT
             {$this->getFields()}
             FROM {$this->tableGet} as `news`
+            {$this->generateSqlJoin()}
             WHERE {$this->generateSqlFilters()}
             {$this->generateOrder()}
             LIMIT 1
@@ -80,6 +123,11 @@ class Sql extends SqlFilters implements Database
         $newsData = $statement->fetch(PDO::FETCH_ASSOC);
         if ($newsData == false) {
             return null;
+        }
+
+        if ($newsData['labels_id'] != null) {
+            $labelsId = explode(',', $newsData['labels_id']);
+            $newsData['labels'] = $this->getLabels($labelsId);
         }
 
         $standarsizedData = $this->standardizeData($newsData);
@@ -114,6 +162,7 @@ class Sql extends SqlFilters implements Database
                 'metadata' => $data['cover_metadata'],
                 'status' => $data['cover_status']
             ],
+            'labels' => $data['labels'] ?? new LabelsCollection,
             'status' => $data['status']
         ];
     }
@@ -124,6 +173,7 @@ class Sql extends SqlFilters implements Database
             SELECT SQL_CALC_FOUND_ROWS
             {$this->getFields()}
             FROM {$this->tableGet} as `news`
+            {$this->generateSqlJoin()}
             WHERE {$this->generateSqlFilters()}
             {$this->generateOrder()}
             {$this->generateSqlLimit()}
@@ -134,7 +184,29 @@ class Sql extends SqlFilters implements Database
         }
         $collection = new Collection;
         $builder = new Builder;
-        while ($news = $statement->fetch(PDO::FETCH_ASSOC)) {
+        $newsData = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $labelsId = array_column($newsData, 'labels_id');
+        $labelsId = array_filter(
+            $labelsId,
+            function($ids) { return $ids != null; }
+        );
+        $labelsId = array_map(
+            function($ids){ return explode(',', $ids); },
+            $labelsId
+        );
+        $labelsId = array_merge(...$labelsId);
+        $labelsId = array_unique($labelsId);
+        $labels = $this->getLabels($labelsId);
+
+        foreach ($newsData as $news) {
+            if (is_array($news['labels_id'])) {
+                $newsLabelsId = explode(',', $news['labels_id']);
+                $news['labels'] = new LabelsCollection;
+                foreach ($newsLabelsId as $id) {
+                    $news['labels']->add($labels->getById($id));
+                }
+            }
             $standarsizedData = $this->standardizeData($news);
             $builder->setData($standarsizedData);
             $collection->add(
@@ -167,8 +239,17 @@ class Sql extends SqlFilters implements Database
             `news`.`cover_date_hour`,
             `news`.`cover_metadata`,
             `news`.`cover_status`,
+            `news`.`labels_id`,
             `news`.`status`
         ';
+    }
+
+    private function getLabels(array $ids): LabelsCollection
+    {
+        $ids = array_map('intval', $ids);
+        $labelStorage = clone $this->labelStorage;
+        $labelStorage->addFilterByIds('=', ...$ids);
+        return $labelStorage->getAll();
     }
 
     public function getTotalRows(): int
@@ -185,6 +266,12 @@ class Sql extends SqlFilters implements Database
     public function setTableGet(string $name): Database
     {
         $this->tableGet = $name;
+        return $this;
+    }
+
+    public function setTableLabelAssociation(string $name): Database
+    {
+        $this->tableLabelAssociation = $name;
         return $this;
     }
 
