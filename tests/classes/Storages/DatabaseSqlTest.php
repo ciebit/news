@@ -83,6 +83,16 @@ class DatabaseSqlTest extends Connection
         $this->assertEquals($id, $news->getId());
     }
 
+    public function testGetFilterByIds(): void
+    {
+        $database = $this->getDatabase();
+        $database->addFilterByIds('=', 2, 3);
+        $news = $database->getAll();
+        $this->assertCount(2, $news);
+        $this->assertEquals(2, $news->getById(2)->getId());
+        $this->assertEquals(3, $news->getById(3)->getId());
+    }
+
     public function testGetFilterByLabelId(): void
     {
         $id = 2;
@@ -91,6 +101,11 @@ class DatabaseSqlTest extends Connection
         $news = $database->get();
         $this->assertEquals(2, $news->getId());
         $this->assertEquals(2, $news->getLabels()->getArrayObject()->offsetGet(0)->getId());
+
+        $database = $this->getDatabase();
+        $database->addFilterByLabelId($id+0);
+        $news = $database->getAll();
+        $this->assertCount(1, $news);
     }
 
     public function testGetFilterByStatus(): void

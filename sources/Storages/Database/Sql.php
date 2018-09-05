@@ -23,8 +23,9 @@ use function intval;
 
 class Sql extends SqlFilters implements Database
 {
-    private $pdo; #PDO
+    static private $counterKey = 0;
     private $labelStorage; #LabelStorage
+    private $pdo; #PDO
     private $tableLabelAssociation; #: string
     private $tableGet; #string
     private $tableSave; #string
@@ -52,6 +53,21 @@ class Sql extends SqlFilters implements Database
         $sql = "`news`.`id` $operator :{$key}";
         $this->addfilter($key, $sql, PDO::PARAM_INT, $id);
         return $this;
+    }
+
+    public function addFilterByIds(string $operator, int ...$ids): Storage
+    {
+         $keyPrefix = 'id';
+         $keys = [];
+         $operator = $operator == '!=' ? 'NOT IN' : 'IN';
+         foreach ($ids as $id) {
+             $key = $keyPrefix . self::$counterKey++;
+             $this->addBind($key, PDO::PARAM_INT, $id);
+             $keys[] = $key;
+         }
+         $keysStr = implode(', :', $keys);
+         $this->addSqlFilter("`news`.`id` {$operator} (:{$keysStr})");
+         return $this;
     }
 
     public function addFilterByLabelId(int $id, string $operator = '='): Storage
