@@ -37,6 +37,56 @@
         </row>
     </table>
 
+    <table name="cb_labels">
+        <column>id</column>
+        <column>title</column>
+        <column>ascendants_id</column>
+        <column>uri</column>
+        <column>status</column>
+        <row>
+            <value>1</value>
+            <value>Label 01</value>
+            <null/>
+            <value>label-01</value>
+            <value>3</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>Label 02</value>
+            <value>1</value>
+            <value>label-02</value>
+            <value>3</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>Label 03</value>
+            <value>1,2</value>
+            <value>label-03</value>
+            <value>3</value>
+        </row>
+    </table>
+
+    <table name="cb_news_labels">
+        <column>id</column>
+        <column>new_id</column>
+        <column>label_id</column>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>2</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>3</value>
+            <value>3</value>
+        </row>
+    </table>
+
     <table name="cb_files">
         <column>id</column>
         <column>name</column>
