@@ -29,7 +29,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Ciebit\\News\\Tests\\": "tests/"
+            "Ciebit\\News\\Tests\\": "tests/classes/"
         }
     },
     "require": {
