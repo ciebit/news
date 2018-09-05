@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Ciebit\News\Builders;
 
+use Ciebit\Labels\Collection as LabelsCollection;
 use Ciebit\News\News;
 use Ciebit\News\Status;
 use Ciebit\Stories\Builders\FromArray as StoryBuilder;
@@ -23,7 +24,8 @@ class FromArray implements Builder
     {
         if (
             ! is_array($this->data) OR
-            ! $this->data['story']
+            ! $this->data['story'] OR
+            ! ($this->data['labels'] instanceof LabelsCollection)
         ) {
             throw new Exception('ciebit.news.builders.invalid', 3);
         }
@@ -34,12 +36,12 @@ class FromArray implements Builder
             $story,
             $status
         );
-        
+
+        $news->setLabels($this->data['labels']);
         $this->data['id'] && $news->setId((int) $this->data['id']);
         $this->data['image'] && $news->setImage(
            (new ImageBuilder)->setData($this->data['image'])->build()
         );
-        
 
         return $news;
     }
