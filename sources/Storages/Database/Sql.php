@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace Ciebit\News\Storages\Database;
 
+use Ciebit\Labels\Storages\Storage as StorageLabel;
 use Ciebit\News\Collection;
 use Ciebit\News\Builders\FromArray as Builder;
 use Ciebit\News\News;
@@ -16,7 +17,7 @@ class Sql extends SqlFilters implements Database
     private $tableGet; #string
     private $tableSave; #string
 
-    public function __construct(PDO $pdo)
+    public function __construct(PDO $pdo, StorageLabel $storageLabel)
     {
         $this->pdo = $pdo;
         $this->tableGet = 'cb_news_complete';
@@ -114,6 +115,7 @@ class Sql extends SqlFilters implements Database
                 'metadata' => $data['cover_metadata'],
                 'status' => $data['cover_status']
             ],
+            'labels' => $data['labels'],
             'status' => $data['status']
         ];
     }
@@ -167,6 +169,7 @@ class Sql extends SqlFilters implements Database
             `news`.`cover_date_hour`,
             `news`.`cover_metadata`,
             `news`.`cover_status`,
+            `news`.`labels_id`,
             `news`.`status`
         ';
     }
