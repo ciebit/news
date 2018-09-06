@@ -193,16 +193,15 @@ class Sql extends SqlFilters implements Database
             $labelsId,
             function($ids) { return $ids != null; }
         );
+        $labelsId = array_map(
+            function($ids){ return explode(',', $ids); },
+            $labelsId
+        );
+
+        $labelsId[] = [];
+        $labelsId = array_merge(...$labelsId);
+
         if (count($labelsId) > 0) {
-            $labelsId = array_map(
-                function($ids){ return explode(',', $ids); },
-                $labelsId
-            );
-            if (count($labelsId) > 1) {
-                $labelsId = array_merge(...$labelsId);
-            } else {
-                $labelsId = $labelsId[0];
-            }
             $labelsId = array_unique($labelsId);
             $labels = $this->getLabels($labelsId);
         }

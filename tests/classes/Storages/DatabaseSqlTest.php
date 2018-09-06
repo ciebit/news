@@ -32,6 +32,14 @@ class DatabaseSqlTest extends Connection
         $this->assertCount(5, $newsCollection->getIterator());
     }
 
+    public function testGetAllBugUniqueValue(): void
+    {
+        $database = $this->getDatabase();
+        $database->addFilterByIds('=', 1, 2);
+        $newsCollection = $database->getAll();
+        $this->assertInstanceOf(Collection::class, $newsCollection);
+    }
+
     public function testGetAllFilterById(): void
     {
         $id = 3;
