@@ -17,6 +17,7 @@ use function array_filter;
 use function array_map;
 use function array_merge;
 use function array_unique;
+use function count;
 use function explode;
 use function is_aray;
 use function intval;
@@ -186,25 +187,32 @@ class Sql extends SqlFilters implements Database
         $builder = new Builder;
         $newsData = $statement->fetchAll(PDO::FETCH_ASSOC);
 
+        $labels = null;
         $labelsId = array_column($newsData, 'labels_id');
         $labelsId = array_filter(
             $labelsId,
             function($ids) { return $ids != null; }
         );
-        $labelsId = array_map(
-            function($ids){ return explode(',', $ids); },
-            $labelsId
-        );
-        $labelsId = array_merge(...$labelsId);
-        $labelsId = array_unique($labelsId);
-        $labels = $this->getLabels($labelsId);
+        if (count($labelsId) > 0) {
+            $labelsId = array_map(
+                function($ids){ return explode(',', $ids); },
+                $labelsId
+            );
+            if (count($labelsId) > 1) {
+                $labelsId = array_merge(...$labelsId);
+            } else {
+                $labelsId = $labelsId[0];
+            }
+            $labelsId = array_unique($labelsId);
+            $labels = $this->getLabels($labelsId);
+        }
 
         foreach ($newsData as $news) {
-            if (is_array($news['labels_id'])) {
+            if ($labels instanceof LabelsCollection && $news['labels_id'] != null) {
                 $newsLabelsId = explode(',', $news['labels_id']);
                 $news['labels'] = new LabelsCollection;
                 foreach ($newsLabelsId as $id) {
-                    $news['labels']->add($labels->getById($id));
+                    $news['labels']->add($labels->getById((int) $id));
                 }
             }
             $standarsizedData = $this->standardizeData($news);

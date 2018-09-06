@@ -106,6 +106,7 @@ class DatabaseSqlTest extends Connection
         $database->addFilterByLabelId($id+0);
         $news = $database->getAll();
         $this->assertCount(1, $news);
+        $this->assertEquals($id, $news->getArrayObject()->offsetGet(0)->getLabels()->getArrayObject()->offsetGet(0)->getId());
     }
 
     public function testGetFilterByStatus(): void
