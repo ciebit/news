@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bfdbda7e2e33e97fa5da7a17b40606bc",
+    "content-hash": "bd7a2620517eb5628975793980dc40a8",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.67.5",
+            "version": "3.67.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "fa7689ba2865e9e00ac44efefc2c3f2ea8424c63"
+                "reference": "cdc7180ae87b23d8b34eb8eb8176002081b32c3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/fa7689ba2865e9e00ac44efefc2c3f2ea8424c63",
-                "reference": "fa7689ba2865e9e00ac44efefc2c3f2ea8424c63",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cdc7180ae87b23d8b34eb8eb8176002081b32c3d",
+                "reference": "cdc7180ae87b23d8b34eb8eb8176002081b32c3d",
                 "shasum": ""
             },
             "require": {
@@ -84,20 +84,20 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-09-04T21:04:34+00:00"
+            "time": "2018-09-13T18:34:42+00:00"
         },
         {
             "name": "ciebit/files",
-            "version": "v0.1.1",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ciebit/files.git",
-                "reference": "940341d28e184aa8a34c01fe02e556223db0414c"
+                "reference": "3beb7e9a9b78e98e5da8ba0799430de0c431c3e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ciebit/files/zipball/940341d28e184aa8a34c01fe02e556223db0414c",
-                "reference": "940341d28e184aa8a34c01fe02e556223db0414c",
+                "url": "https://api.github.com/repos/ciebit/files/zipball/3beb7e9a9b78e98e5da8ba0799430de0c431c3e9",
+                "reference": "3beb7e9a9b78e98e5da8ba0799430de0c431c3e9",
                 "shasum": ""
             },
             "require": {
@@ -139,7 +139,7 @@
                 "files",
                 "imagens"
             ],
-            "time": "2018-08-13T19:09:36+00:00"
+            "time": "2018-08-24T11:45:50+00:00"
         },
         {
             "name": "ciebit/labels",
@@ -1297,16 +1297,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.5.12",
+            "version": "6.5.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "24da433d7384824d65ea93fbb462e2f31bbb494e"
+                "reference": "0973426fb012359b2f18d3bd1e90ef1172839693"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/24da433d7384824d65ea93fbb462e2f31bbb494e",
-                "reference": "24da433d7384824d65ea93fbb462e2f31bbb494e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0973426fb012359b2f18d3bd1e90ef1172839693",
+                "reference": "0973426fb012359b2f18d3bd1e90ef1172839693",
                 "shasum": ""
             },
             "require": {
@@ -1377,7 +1377,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-08-22T06:32:48+00:00"
+            "time": "2018-09-08T15:10:43+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

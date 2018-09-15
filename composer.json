@@ -35,7 +35,7 @@
     "require": {
         "php": "^7.1",
         "myclabs/php-enum": "^1.6.1",
-        "ciebit/files": "^0.1.0",
+        "ciebit/files": "^0.3.0",
         "ciebit/labels": "^0.1.0",
         "ciebit/stories": "^0.2.0"
     },
