@@ -30,6 +30,7 @@ class Sql extends SqlFilters implements Database
     private $labelStorage; #LabelStorage
     private $pdo; #PDO
     private $storyStorage; #StoryStorage
+    private $tableLabel; #: string
     private $tableLabelAssociation; #: string
     private $tableGet; #string
     private $tableSave; #string
@@ -40,6 +41,7 @@ class Sql extends SqlFilters implements Database
         $this->labelStorage = $labelStorage;
         $this->storyStorage = $storyStorage;
         $this->tableGet = 'cb_news_complete';
+        $this->tableLabel = 'cb_labels';
         $this->tableLabelAssociation = 'cb_news_labels';
         $this->tableSave = 'cb_news';
     }
@@ -83,6 +85,22 @@ class Sql extends SqlFilters implements Database
             "INNER JOIN `{$this->tableLabelAssociation}` AS `labels`
             ON `labels`.`news_id` = `news`.`id`"
         )->addfilter($key, $sql, PDO::PARAM_INT, $id);
+        return $this;
+    }
+
+    public function addFilterByLabelUri(string $uri, string $operator = '='): Storage
+    {
+        $this->addSqlJoin(
+            "INNER JOIN `{$this->tableLabelAssociation}`
+            ON `{$this->tableLabelAssociation}`.`news_id` = `news`.`id`
+            INNER JOIN `{$this->tableLabel}`
+            ON `{$this->tableLabel}`.`id` = `{$this->tableLabelAssociation}`.`label_id`"
+        );
+
+        $key = 'label_uri';
+        $sql = "`{$this->tableLabel}`.`uri` $operator :{$key}";
+        $this->addfilter($key, $sql, PDO::PARAM_STR, $uri);
+
         return $this;
     }
 

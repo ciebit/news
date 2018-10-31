@@ -119,6 +119,22 @@ class DatabaseSqlTest extends Connection
         $this->assertEquals($id, $news->getArrayObject()->offsetGet(0)->getLabels()->getArrayObject()->offsetGet(0)->getId());
     }
 
+    public function testGetFilterByLabelUri(): void
+    {
+        $uri = 'label-02';
+        $database = $this->getDatabase();
+        $database->addFilterByLabelUri($uri.'');
+        $news = $database->get();
+        $this->assertEquals(2, $news->getId());
+        $this->assertEquals(2, $news->getLabels()->getArrayObject()->offsetGet(0)->getId());
+
+        $database = $this->getDatabase();
+        $database->addFilterByLabelUri($uri.'');
+        $news = $database->getAll();
+        $this->assertCount(1, $news);
+        $this->assertEquals(2, $news->getArrayObject()->offsetGet(0)->getLabels()->getArrayObject()->offsetGet(0)->getId());
+    }
+
     public function testGetFilterByStatus(): void
     {
         $database = $this->getDatabase();
