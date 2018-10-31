@@ -2,6 +2,7 @@
 namespace Ciebit\News\Tests\Storages;
 
 use Ciebit\Labels\Storages\Database\Sql as LabelsStorage;
+use Ciebit\Stories\Storages\Database\Sql as StoryStorage;
 use Ciebit\News\Collection;
 use Ciebit\News\Status;
 use Ciebit\News\News;
@@ -14,7 +15,8 @@ class DatabaseSqlTest extends Connection
     {
         $pdo = $this->getPdo();
         $labelStorage = new LabelsStorage($pdo);
-        return new DatabaseSql($pdo, $labelStorage);
+        $storyStorage = new StoryStorage($pdo);
+        return new DatabaseSql($pdo, $storyStorage, $labelStorage);
     }
 
     public function testGet(): void
@@ -162,5 +164,17 @@ class DatabaseSqlTest extends Connection
         $database->orderBy('id', 'DESC');
         $news = $database->get();
         $this->assertEquals(5, $news->getId());
+    }
+
+    public function testUpdate(): void
+    {
+        $id = 2;
+        $views = 13;
+        $database = $this->getDatabase();
+        $database->addFilterById($id+0);
+        $news = $database->get();
+        $news->getStory()->setViews($views+0);
+        $news = $database->update($news)->get();
+        $this->assertEquals($views, $news->getStory()->getViews());
     }
 }
