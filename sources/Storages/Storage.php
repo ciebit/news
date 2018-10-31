@@ -28,4 +28,9 @@ interface Storage
     public function setStartingLine(int $lineInit): self;
 
     public function setTotalLines(int $total): self;
+
+    /**
+     * @throw Exception
+    */
+    public function update(News $news): self;
 }

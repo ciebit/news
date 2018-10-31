@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bd7a2620517eb5628975793980dc40a8",
+    "content-hash": "6702f0274edcae54dfb31081c01ee3b8",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -199,16 +199,16 @@
         },
         {
             "name": "ciebit/stories",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ciebit/stories.git",
-                "reference": "928d77d84d66755ebc9575ff2503564627987247"
+                "reference": "e6f1888c80a357ffc1fd8553d55491f74d06fc70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ciebit/stories/zipball/928d77d84d66755ebc9575ff2503564627987247",
-                "reference": "928d77d84d66755ebc9575ff2503564627987247",
+                "url": "https://api.github.com/repos/ciebit/stories/zipball/e6f1888c80a357ffc1fd8553d55491f74d06fc70",
+                "reference": "e6f1888c80a357ffc1fd8553d55491f74d06fc70",
                 "shasum": ""
             },
             "require": {
@@ -244,7 +244,7 @@
                 "notícias",
                 "story"
             ],
-            "time": "2018-08-14T13:41:42+00:00"
+            "time": "2018-10-31T17:56:25+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

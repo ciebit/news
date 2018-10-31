@@ -4,11 +4,13 @@ namespace Ciebit\News\Storages\Database;
 
 use Ciebit\Labels\Collection as LabelsCollection;
 use Ciebit\Labels\Storages\Storage as LabelStorage;
+use Ciebit\Stories\Storages\Storage as StoryStorage;
 use Ciebit\News\Collection;
 use Ciebit\News\Builders\FromArray as Builder;
 use Ciebit\News\News;
 use Ciebit\News\Status;
 use Ciebit\News\Storages\Storage;
+use Ciebit\News\Storages\Database\Database;
 use Exception;
 use PDO;
 
@@ -27,15 +29,17 @@ class Sql extends SqlFilters implements Database
     static private $counterKey = 0;
     private $labelStorage; #LabelStorage
     private $pdo; #PDO
+    private $storyStorage; #StoryStorage
     private $tableLabel; #: string
     private $tableLabelAssociation; #: string
     private $tableGet; #string
     private $tableSave; #string
 
-    public function __construct(PDO $pdo, LabelStorage $labelStorage)
+    public function __construct(PDO $pdo, StoryStorage $storyStorage, LabelStorage $labelStorage)
     {
         $this->pdo = $pdo;
         $this->labelStorage = $labelStorage;
+        $this->storyStorage = $storyStorage;
         $this->tableGet = 'cb_news_complete';
         $this->tableLabel = 'cb_labels';
         $this->tableLabelAssociation = 'cb_news_labels';
@@ -309,6 +313,15 @@ class Sql extends SqlFilters implements Database
     public function setTotalLines(int $total): Storage
     {
         parent::setLimit($total);
+        return $this;
+    }
+
+    /**
+     * @throw Exception
+    */
+    public function update(News $news): Storage
+    {
+        $this->storyStorage->update($news->getStory());
         return $this;
     }
 }
