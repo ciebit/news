@@ -34,8 +34,12 @@ class Sql extends SqlFilters implements Database
     private $tableLabelAssociation; #: string
     private $tableGet; #string
     private $tableSave; #string
+    private $table; #: string
 
-    public function __construct(PDO $pdo, StoryStorage $storyStorage, LabelStorage $labelStorage)
+    public function __construct(
+        PDO $pdo,
+        StoryStorage $storyStorage,
+        LabelStorage $labelStorage)
     {
         $this->pdo = $pdo;
         $this->labelStorage = $labelStorage;
@@ -44,6 +48,7 @@ class Sql extends SqlFilters implements Database
         $this->tableLabel = 'cb_labels';
         $this->tableLabelAssociation = 'cb_news_labels';
         $this->tableSave = 'cb_news';
+        $this->table = 'cb_news';
     }
 
     public function addFilterByBody(string $body, string $operator = '='): Storage
@@ -130,10 +135,10 @@ class Sql extends SqlFilters implements Database
 
     public function get(): ?News
     {
-        $statement = $this->pdo->prepare("
+        $statement = $this->pdo->prepare($sql="
             SELECT
             {$this->getFields()}
-            FROM {$this->tableGet} as `news`
+            FROM {$this->table} as `news`
             {$this->generateSqlJoin()}
             WHERE {$this->generateSqlFilters()}
             {$this->generateOrder()}
@@ -141,20 +146,28 @@ class Sql extends SqlFilters implements Database
         ");
         $this->bind($statement);
         if ($statement->execute() === false) {
-            throw new Exception('ciebit.stories.storages.database.get_error', 2);
+            throw new Exception('ciebit.news.storages.database.get_error', 2);
         }
         $newsData = $statement->fetch(PDO::FETCH_ASSOC);
         if ($newsData == false) {
             return null;
         }
 
+        $story = $this->storyStorage->addFilterById((int) $newsData['story_id'])->get();
+        // $cover = $this->fileStorage->addFilterById($newsData[$newsData['cover_id']])->get();
+        // var_dump($cover);
+
+        $news = new News($story, new Status((int) $newsData['status']));
+        // $news->setImage($cover);
+
         if ($newsData['labels_id'] != null) {
             $labelsId = explode(',', $newsData['labels_id']);
-            $newsData['labels'] = $this->getLabels($labelsId);
+            $labels = $this->getLabels($labelsId);
+            $news->setLabels($labels);
         }
+        var_dump($news);
 
-        $standarsizedData = $this->standardizeData($newsData);
-        return (new Builder)->setData($standarsizedData)->build();
+        return $news;
     }
 
     private function standardizeData(array $data): array
@@ -228,19 +241,20 @@ class Sql extends SqlFilters implements Database
             $labels = $this->getLabels($labelsId);
         }
 
-        foreach ($newsData as $news) {
-            if ($labels instanceof LabelsCollection && $news['labels_id'] != null) {
-                $newsLabelsId = explode(',', $news['labels_id']);
-                $news['labels'] = new LabelsCollection;
+        foreach ($newsData as $newsItemData) {
+            if ($labels instanceof LabelsCollection && $newsItemData['labels_id'] != null) {
+                $newsLabelsId = explode(',', $newsItemData['labels_id']);
+                $newsItemData['labels'] = new LabelsCollection;
                 foreach ($newsLabelsId as $id) {
-                    $news['labels']->add($labels->getById((int) $id));
+                    $newsItemData['labels']->add($labels->getById((int) $id));
                 }
             }
-            $standarsizedData = $this->standardizeData($news);
+            $standarsizedData = $this->standardizeData($newsItemData);
+
+            $story = $this->storyStorage->addFilterById($newsItemData['story_id'])->get();
+            $News = new News($story, new Status($newsItemData['status']));
             $builder->setData($standarsizedData);
-            $collection->add(
-                $builder->build()
-            );
+            $collection->add($News);
         }
         return $collection;
     }
@@ -250,25 +264,7 @@ class Sql extends SqlFilters implements Database
         return '
             `news`.`id`,
             `news`.`story_id`,
-            `news`.`story_title`,
-            `news`.`story_summary`,
-            `news`.`story_body`,
-            `news`.`story_datetime`,
-            `news`.`story_uri`,
-            `news`.`story_views`,
-            `news`.`story_status`,
             `news`.`cover_id`,
-            `news`.`cover_name`,
-            `news`.`cover_description`,
-            `news`.`cover_uri`,
-            `news`.`cover_extension`,
-            `news`.`cover_size`,
-            `news`.`cover_views`,
-            `news`.`cover_mimetype`,
-            `news`.`cover_date_hour`,
-            `news`.`cover_metadata`,
-            `news`.`cover_status`,
-            `news`.`labels_id`,
             `news`.`status`
         ';
     }
