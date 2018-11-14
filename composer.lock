@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6702f0274edcae54dfb31081c01ee3b8",
+    "content-hash": "3bffaf52899f0e1b53132ad59496de95",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.70.0",
+            "version": "3.71.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "49c563dfdf890ac510f441c9ae5537ffc2de8ccf"
+                "reference": "ce91558fe7ab0368792c088a573fecf328319deb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/49c563dfdf890ac510f441c9ae5537ffc2de8ccf",
-                "reference": "49c563dfdf890ac510f441c9ae5537ffc2de8ccf",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ce91558fe7ab0368792c088a573fecf328319deb",
+                "reference": "ce91558fe7ab0368792c088a573fecf328319deb",
                 "shasum": ""
             },
             "require": {
@@ -87,7 +87,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-10-30T20:50:23+00:00"
+            "time": "2018-11-13T21:55:30+00:00"
         },
         {
             "name": "ciebit/files",
@@ -199,16 +199,16 @@
         },
         {
             "name": "ciebit/stories",
-            "version": "v0.3.0",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ciebit/stories.git",
-                "reference": "e6f1888c80a357ffc1fd8553d55491f74d06fc70"
+                "reference": "e2a45dbac97ca22a3204dc7dcc1530ff964aa7c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ciebit/stories/zipball/e6f1888c80a357ffc1fd8553d55491f74d06fc70",
-                "reference": "e6f1888c80a357ffc1fd8553d55491f74d06fc70",
+                "url": "https://api.github.com/repos/ciebit/stories/zipball/e2a45dbac97ca22a3204dc7dcc1530ff964aa7c1",
+                "reference": "e2a45dbac97ca22a3204dc7dcc1530ff964aa7c1",
                 "shasum": ""
             },
             "require": {
@@ -244,7 +244,7 @@
                 "notícias",
                 "story"
             ],
-            "time": "2018-10-31T17:56:25+00:00"
+            "time": "2018-11-14T17:40:18+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -2060,7 +2060,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.1.6",
+            "version": "v4.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
