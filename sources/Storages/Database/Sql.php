@@ -5,6 +5,9 @@ namespace Ciebit\News\Storages\Database;
 use Ciebit\Labels\Collection as LabelsCollection;
 use Ciebit\Labels\Storages\Storage as LabelStorage;
 use Ciebit\Stories\Storages\Storage as StoryStorage;
+use Ciebit\Stories\Story;
+use Ciebit\Files\Images\Image;
+use Ciebit\Files\Storages\Storage as FilesStorage;
 use Ciebit\News\Collection;
 use Ciebit\News\Builders\FromArray as Builder;
 use Ciebit\News\News;
@@ -28,8 +31,10 @@ class Sql extends SqlFilters implements Database
 {
     static private $counterKey = 0;
     private $labelStorage; #LabelStorage
+    private $localFilter; #bool
     private $pdo; #PDO
     private $storyStorage; #StoryStorage
+    private $filesStorage; # FilesStorage
     private $tableLabel; #: string
     private $tableLabelAssociation; #: string
     private $tableGet; #string
@@ -38,10 +43,13 @@ class Sql extends SqlFilters implements Database
 
     public function __construct(
         PDO $pdo,
+        FilesStorage $filesStorage,
         StoryStorage $storyStorage,
         LabelStorage $labelStorage)
     {
+        $this->localFilter = false;
         $this->pdo = $pdo;
+        $this->filesStorage = $filesStorage;
         $this->labelStorage = $labelStorage;
         $this->storyStorage = $storyStorage;
         $this->tableGet = 'cb_news_complete';
@@ -51,19 +59,12 @@ class Sql extends SqlFilters implements Database
         $this->table = 'cb_news';
     }
 
-    public function addFilterByBody(string $body, string $operator = '='): Storage
-    {
-        $key = 'body';
-        $sql = "`news`.`story_body` {$operator} :{$key}";
-        $this->addFilter($key, $sql, PDO::PARAM_STR, $body);
-        return $this;
-    }
-
     public function addFilterById(int $id, string $operator = '='): Storage
     {
         $key = 'id';
         $sql = "`news`.`id` $operator :{$key}";
         $this->addfilter($key, $sql, PDO::PARAM_INT, $id);
+        $this->localFilter = true;
         return $this;
     }
 
@@ -79,33 +80,43 @@ class Sql extends SqlFilters implements Database
          }
          $keysStr = implode(', :', $keys);
          $this->addSqlFilter("`news`.`id` {$operator} (:{$keysStr})");
+         $this->localFilter = true;
          return $this;
     }
 
     public function addFilterByLabelId(int $id, string $operator = '='): Storage
     {
-        $key = 'label_id';
-        $sql = "`labels`.`label_id` $operator :{$key}";
-        $this->addSqlJoin(
-            "INNER JOIN `{$this->tableLabelAssociation}` AS `labels`
-            ON `labels`.`news_id` = `news`.`id`"
-        )->addfilter($key, $sql, PDO::PARAM_INT, $id);
+        // $key = 'label_id';
+        // $sql = "`labels`.`label_id` $operator :{$key}";
+        // $this->addSqlJoin(
+        //     "INNER JOIN `{$this->tableLabelAssociation}` AS `labels`
+        //     ON `labels`.`news_id` = `news`.`id`"
+        // )->addfilter($key, $sql, PDO::PARAM_INT, $id);
         return $this;
     }
 
     public function addFilterByLabelUri(string $uri, string $operator = '='): Storage
     {
-        $this->addSqlJoin(
-            "INNER JOIN `{$this->tableLabelAssociation}`
-            ON `{$this->tableLabelAssociation}`.`news_id` = `news`.`id`
-            INNER JOIN `{$this->tableLabel}`
-            ON `{$this->tableLabel}`.`id` = `{$this->tableLabelAssociation}`.`label_id`"
-        );
+        // $this->addSqlJoin(
+        //     "INNER JOIN `{$this->tableLabelAssociation}`
+        //     ON `{$this->tableLabelAssociation}`.`news_id` = `news`.`id`
+        //     INNER JOIN `{$this->tableLabel}`
+        //     ON `{$this->tableLabel}`.`id` = `{$this->tableLabelAssociation}`.`label_id`"
+        // );
 
-        $key = 'label_uri';
-        $sql = "`{$this->tableLabel}`.`uri` $operator :{$key}";
-        $this->addfilter($key, $sql, PDO::PARAM_STR, $uri);
+        // $key = 'label_uri';
+        // $sql = "`{$this->tableLabel}`.`uri` $operator :{$key}";
+        // $this->addfilter($key, $sql, PDO::PARAM_STR, $uri);
 
+        return $this;
+    }
+
+    public function addFilterByStoryId(string $id, string $operator = '='): Storage
+    {
+        $key = 'story_id';
+        $sql = "`news`.`story_id` {$operator} :{$key}";
+        $this->addFilter($key, $sql, PDO::PARAM_INT, $id);
+        $this->localFilter = true;
         return $this;
     }
 
@@ -114,26 +125,58 @@ class Sql extends SqlFilters implements Database
         $key = 'status';
         $sql = "`news`.`status` {$operator} :{$key}";
         $this->addFilter($key, $sql, PDO::PARAM_INT, $status->getValue());
+        $this->localFilter = true;
         return $this;
     }
 
-    public function addFilterByTitle(string $title, string $operator = '='): Storage
-    {
-        $key = 'title';
-        $sql = "`news`.`story_title` {$operator} :{$key}";
-        $this->addFilter($key, $sql, PDO::PARAM_STR, $title);
-        return $this;
-    }
+    public function createNews(
+        array $newsData,
+        Story $story,
+        ?Image $cover,
+        LabelsCollection $labels
+    ): News {
+        $status = new Status((int) $newsData['status']);
+        $news = new News($story, $status);
+        $news->setId($newsData['id'])
+        ->setLabels($labels);
 
-    public function addFilterByUri(string $uri, string $operator = '='): Storage
-    {
-        $key = 'uri';
-        $sql = "`news`.`story_uri` {$operator} :{$key}";
-        $this->addFilter($key, $sql, PDO::PARAM_STR, $uri);
-        return $this;
+        if ($cover instanceof Image) {
+            $news->setImage($cover);
+        }
+
+        return $news;
     }
 
     public function get(): ?News
+    {
+        if ($this->localFilter) {
+            $newsData = $this->getNewsData();
+            if (is_null($newsData)) {
+                return null;
+            }
+            $this->getStoryStorage()->addFilterById((int) $newsData['story_id']);
+            $story = $this->getStory();
+        } else {
+            $story = $this->getStory();
+            $this->addFilterByStoryId((string) $story->getId());
+            $newsData = $this->getNewsData();
+        }
+
+        $cover = $this->filesStorage->addFilterById((int) $newsData['cover_id'])->get();
+        $labels = $this->getLabelsById($newsData['id']);
+
+        return $this->createNews($newsData, $story, $cover, $labels);
+    }
+
+    private function getStory(): Story
+    {
+        return $this->getStoryStorage()->get();
+    }
+
+    /**
+     * @throw Exception
+    */
+    private function getNewsData(): ?array
     {
         $statement = $this->pdo->prepare($sql="
             SELECT
@@ -144,30 +187,50 @@ class Sql extends SqlFilters implements Database
             {$this->generateOrder()}
             LIMIT 1
         ");
+        echo $sql;
         $this->bind($statement);
+
         if ($statement->execute() === false) {
             throw new Exception('ciebit.news.storages.database.get_error', 2);
         }
+
         $newsData = $statement->fetch(PDO::FETCH_ASSOC);
+
         if ($newsData == false) {
             return null;
         }
 
-        $story = $this->storyStorage->addFilterById((int) $newsData['story_id'])->get();
-        // $cover = $this->fileStorage->addFilterById($newsData[$newsData['cover_id']])->get();
-        // var_dump($cover);
+        return $newsData;
+    }
 
-        $news = new News($story, new Status((int) $newsData['status']));
-        // $news->setImage($cover);
+    /**
+     * @throw Exception
+    */
+    public function getLabelsById(string $id): LabelsCollection
+    {
+        $statement = $this->pdo->prepare("
+            SELECT * FROM {$this->tableLabelAssociation} WHERE news_id = :id
+        ");
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
 
-        if ($newsData['labels_id'] != null) {
-            $labelsId = explode(',', $newsData['labels_id']);
-            $labels = $this->getLabels($labelsId);
-            $news->setLabels($labels);
+        if ($statement->execute() === false) {
+            throw new Exception('ciebit.news.storages.database.get_error', 2);
         }
-        var_dump($news);
 
-        return $news;
+        $labelsCollection = new LabelsCollection;
+        $labelsData = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $ids = array_column($labelsData, 'label_id');
+        $ids = array_map(function($id) {return (int) $id;}, $ids);
+
+        $labelsStorage = clone $this->labelStorage;
+        $ids && $labelsStorage->addFilterByIds('=', ...$ids);
+        return $labelsStorage->getAll();
+    }
+
+    private function hasLocalFilter(): bool
+    {
+        return $this->localFilter;
     }
 
     private function standardizeData(array $data): array
@@ -275,6 +338,11 @@ class Sql extends SqlFilters implements Database
         $labelStorage = clone $this->labelStorage;
         $labelStorage->addFilterByIds('=', ...$ids);
         return $labelStorage->getAll();
+    }
+
+    public function getStoryStorage(): StoryStorage
+    {
+        return $this->storyStorage;
     }
 
     public function getTotalRows(): int
