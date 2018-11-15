@@ -1,6 +1,7 @@
 <?php
 namespace Ciebit\News\Tests\Storages;
 
+use Ciebit\Files\Storages\Database\Sql as FilesStorage;
 use Ciebit\Labels\Storages\Database\Sql as LabelsStorage;
 use Ciebit\Stories\Storages\Database\Sql as StoryStorage;
 use Ciebit\News\Collection;
@@ -14,9 +15,10 @@ class DatabaseSqlTest extends Connection
     public function getDatabase(): DatabaseSql
     {
         $pdo = $this->getPdo();
+        $filesStorage = new FilesStorage($pdo);
         $labelStorage = new LabelsStorage($pdo);
         $storyStorage = new StoryStorage($pdo);
-        return new DatabaseSql($pdo, $storyStorage, $labelStorage);
+        return new DatabaseSql($pdo, $filesStorage, $storyStorage, $labelStorage);
     }
 
     public function testGet(): void
@@ -64,22 +66,22 @@ class DatabaseSqlTest extends Connection
     public function testGetFilterByBody(): void
     {
         $database = $this->getDatabase();
-        $database->addFilterByBody('Text New 3');
+        $database->getStoryStorage()->addFilterByBody('Text new 3');
         $news = $database->get();
         $this->assertEquals(3, $news->getId());
 
         $database = $this->getDatabase();
-        $database->addFilterByBody('%New 2', 'LIKE');
+        $database->getStoryStorage()->addFilterByBody('%new 2', 'LIKE');
         $news = $database->get();
         $this->assertEquals(2, $news->getId());
 
         $database = $this->getDatabase();
-        $database->addFilterByBody('New five%', 'LIKE');
+        $database->getStoryStorage()->addFilterByBody('New five%', 'LIKE');
         $news = $database->get();
         $this->assertEquals(5, $news->getId());
 
         $database = $this->getDatabase();
-        $database->addFilterByBody('%five%', 'LIKE');
+        $database->getStoryStorage()->addFilterByBody('%five%', 'LIKE');
         $news = $database->get();
         $this->assertEquals(5, $news->getId());
     }
@@ -179,7 +181,7 @@ class DatabaseSqlTest extends Connection
         $database = $this->getDatabase();
         $database->orderBy('id', 'DESC');
         $news = $database->get();
-        $this->assertEquals(5, $news->getId());
+        $this->assertEquals('5', $news->getId());
     }
 
     public function testUpdate(): void
