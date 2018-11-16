@@ -5,6 +5,9 @@ namespace Ciebit\News\Storages\Database;
 use Ciebit\Labels\Collection as LabelsCollection;
 use Ciebit\Labels\Storages\Storage as LabelStorage;
 use Ciebit\Stories\Storages\Storage as StoryStorage;
+use Ciebit\Stories\Story;
+use Ciebit\Files\Images\Image;
+use Ciebit\Files\Storages\Storage as FilesStorage;
 use Ciebit\News\Collection;
 use Ciebit\News\Builders\FromArray as Builder;
 use Ciebit\News\News;
@@ -26,222 +29,254 @@ use function intval;
 
 class Sql extends SqlFilters implements Database
 {
-    static private $counterKey = 0;
-    private $labelStorage; #LabelStorage
-    private $pdo; #PDO
-    private $storyStorage; #StoryStorage
-    private $tableLabel; #: string
-    private $tableLabelAssociation; #: string
-    private $tableGet; #string
-    private $tableSave; #string
+    private $filesStorage; # FilesStorage
+    private $labelStorage; # LabelStorage
+    private $pdo; # PDO
+    private $storyStorage; # StoryStorage
+    private $table; # string
+    private $tableLabelAssociation; # string
+    private $tableStory; # string
 
-    public function __construct(PDO $pdo, StoryStorage $storyStorage, LabelStorage $labelStorage)
-    {
-        $this->pdo = $pdo;
+    public function __construct(
+        PDO $pdo,
+        FilesStorage $filesStorage,
+        StoryStorage $storyStorage,
+        LabelStorage $labelStorage
+    ) {
+        $this->filesStorage = $filesStorage;
         $this->labelStorage = $labelStorage;
+        $this->pdo = $pdo;
         $this->storyStorage = $storyStorage;
-        $this->tableGet = 'cb_news_complete';
-        $this->tableLabel = 'cb_labels';
+        $this->table = 'cb_news';
         $this->tableLabelAssociation = 'cb_news_labels';
-        $this->tableSave = 'cb_news';
     }
 
-    public function addFilterByBody(string $body, string $operator = '='): Storage
+    public function addFilterById(string $operator, int ...$ids): Storage
     {
-        $key = 'body';
-        $sql = "`news`.`story_body` {$operator} :{$key}";
-        $this->addFilter($key, $sql, PDO::PARAM_STR, $body);
-        return $this;
-    }
+        $field = '`news`.`id`';
 
-    public function addFilterById(int $id, string $operator = '='): Storage
-    {
-        $key = 'id';
-        $sql = "`news`.`id` $operator :{$key}";
-        $this->addfilter($key, $sql, PDO::PARAM_INT, $id);
-        return $this;
-    }
+        if (count($ids) == 1) {
+            $key = $this->generateValueKey();
+            $sql = "{$field} $operator :{$key}";
+            $this->addfilter($key, $sql, PDO::PARAM_INT, $ids[0]);
+            return $this;
+        }
 
-    public function addFilterByIds(string $operator, int ...$ids): Storage
-    {
-         $keyPrefix = 'id';
          $keys = [];
-         $operator = $operator == '!=' ? 'NOT IN' : 'IN';
          foreach ($ids as $id) {
-             $key = $keyPrefix . self::$counterKey++;
+             $key = $this->generateValueKey();
              $this->addBind($key, PDO::PARAM_INT, $id);
              $keys[] = $key;
          }
-         $keysStr = implode(', :', $keys);
-         $this->addSqlFilter("`news`.`id` {$operator} (:{$keysStr})");
+
+         $keysSql = implode(', :', $keys);
+         $operator = str_replace(['=', '!='], ['IN', 'NOT IN'], $operator);
+         $this->addSqlFilter("{$field} {$operator} (:{$keysSql})");
          return $this;
     }
 
-    public function addFilterByLabelId(int $id, string $operator = '='): Storage
+    public function addFilterByLabelId(string $operator, int $id): Storage
     {
         $key = 'label_id';
-        $sql = "`labels`.`label_id` $operator :{$key}";
+        $sql = "`labels_ass`.`label_id` $operator :{$key}";
         $this->addSqlJoin(
-            "INNER JOIN `{$this->tableLabelAssociation}` AS `labels`
-            ON `labels`.`news_id` = `news`.`id`"
+            "INNER JOIN `{$this->tableLabelAssociation}` AS `labels_ass`
+            ON `labels_ass`.`news_id` = `news`.`id`"
         )->addfilter($key, $sql, PDO::PARAM_INT, $id);
         return $this;
     }
 
-    public function addFilterByLabelUri(string $uri, string $operator = '='): Storage
+    public function addFilterByStoryId(string $operator, string $id): Storage
     {
-        $this->addSqlJoin(
-            "INNER JOIN `{$this->tableLabelAssociation}`
-            ON `{$this->tableLabelAssociation}`.`news_id` = `news`.`id`
-            INNER JOIN `{$this->tableLabel}`
-            ON `{$this->tableLabel}`.`id` = `{$this->tableLabelAssociation}`.`label_id`"
-        );
-
-        $key = 'label_uri';
-        $sql = "`{$this->tableLabel}`.`uri` $operator :{$key}";
-        $this->addfilter($key, $sql, PDO::PARAM_STR, $uri);
-
+        $key = 'story_id';
+        $sql = "`news`.`story_id` {$operator} :{$key}";
+        $this->addFilter($key, $sql, PDO::PARAM_INT, $id);
+        $this->localFilter = true;
         return $this;
     }
 
-    public function addFilterByStatus(Status $status, string $operator = '='): Storage
+    public function addFilterByStatus(string $operator, Status $status): Storage
     {
         $key = 'status';
         $sql = "`news`.`status` {$operator} :{$key}";
         $this->addFilter($key, $sql, PDO::PARAM_INT, $status->getValue());
+        $this->localFilter = true;
         return $this;
     }
 
-    public function addFilterByTitle(string $title, string $operator = '='): Storage
-    {
-        $key = 'title';
-        $sql = "`news`.`story_title` {$operator} :{$key}";
-        $this->addFilter($key, $sql, PDO::PARAM_STR, $title);
-        return $this;
-    }
+    public function createNews(
+        array $newsData,
+        Story $story,
+        ?Image $cover,
+        LabelsCollection $labels
+    ): News {
+        $status = new Status((int) $newsData['status']);
+        $news = new News($story, $status);
+        $news->setId($newsData['id'])
+        ->setLabels($labels);
 
-    public function addFilterByUri(string $uri, string $operator = '='): Storage
-    {
-        $key = 'uri';
-        $sql = "`news`.`story_uri` {$operator} :{$key}";
-        $this->addFilter($key, $sql, PDO::PARAM_STR, $uri);
-        return $this;
+        if ($cover instanceof Image) {
+            $news->setImage($cover);
+        }
+
+        return $news;
     }
 
     public function get(): ?News
     {
+        $newsData = $this->getNewsData();
+        if (is_null($newsData)) {
+            return null;
+        }
+
+        $storyStorage = clone $this->storyStorage;
+        $storyStorage->addFilterById('=', (int) $newsData['story_id']);
+        $story = $storyStorage->get();
+
+        $cover = null;
+        if (! is_null($newsData['cover_id'])) {
+            $filesStorage = clone $this->filesStorage;
+            $filesStorage->addFilterById((int) $newsData['cover_id']);
+            $cover = $filesStorage->get();
+        }
+
+        $labels = $this->getLabelsByNewsId($newsData['id']);
+
+        return $this->createNews($newsData, $story, $cover, $labels);
+    }
+
+    /**
+     * @throw Exception
+    */
+    private function getNewsData(): ?array
+    {
         $statement = $this->pdo->prepare("
             SELECT
             {$this->getFields()}
-            FROM {$this->tableGet} as `news`
+            FROM {$this->table} as `news`
             {$this->generateSqlJoin()}
             WHERE {$this->generateSqlFilters()}
             {$this->generateOrder()}
             LIMIT 1
         ");
+
         $this->bind($statement);
+
         if ($statement->execute() === false) {
-            throw new Exception('ciebit.stories.storages.database.get_error', 2);
+            throw new Exception('ciebit.news.storages.database.get_error', 2);
         }
+
         $newsData = $statement->fetch(PDO::FETCH_ASSOC);
+
         if ($newsData == false) {
             return null;
         }
 
-        if ($newsData['labels_id'] != null) {
-            $labelsId = explode(',', $newsData['labels_id']);
-            $newsData['labels'] = $this->getLabels($labelsId);
-        }
-
-        $standarsizedData = $this->standardizeData($newsData);
-        return (new Builder)->setData($standarsizedData)->build();
+        return $newsData;
     }
 
-    private function standardizeData(array $data): array
+    /**
+     * @throw Exception
+    */
+    private function getLabelsByNewsId(string $id): LabelsCollection
     {
-        return [
-            'id' => $data['id'],
-            'story' => [
-                'id' => $data['story_id'],
-                'title' => $data['story_title'],
-                'summary' => $data['story_summary'],
-                'body' => $data['story_body'],
-                'datetime' => $data['story_datetime'],
-                'uri' => $data['story_uri'],
-                'views' => $data['story_views'],
-                'status' => $data['story_status']
+        $statement = $this->pdo->prepare(
+            "SELECT `id`, `label_id`, `news_id`
+            FROM {$this->tableLabelAssociation}
+            WHERE news_id = :id"
+        );
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
 
-            ],
-            'image' => [
-                'id' => $data['cover_id'],
-                'name' => $data['cover_name'],
-                'description' => $data['cover_description'],
-                'uri' => $data['cover_uri'],
-                'extension' => $data['cover_extension'],
-                'size' => $data['cover_size'],
-                'views' => $data['cover_views'],
-                'mimetype' => $data['cover_mimetype'],
-                'date_hour' => $data['cover_date_hour'],
-                'metadata' => $data['cover_metadata'],
-                'status' => $data['cover_status']
-            ],
-            'labels' => $data['labels'] ?? new LabelsCollection,
-            'status' => $data['status']
-        ];
+        if ($statement->execute() === false) {
+            throw new Exception('ciebit.news.storages.database.get_error', 2);
+        }
+
+        $labelsData = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        if (count($labelsData) < 1) {
+            return new LabelsCollection;
+        }
+
+        $ids = array_column($labelsData, 'label_id');
+        $ids = array_map('intval', $ids);
+
+        $labelsStorage = clone $this->labelStorage;
+        $labelsStorage->addFilterByIds('=', ...$ids);
+        return $labelsStorage->getAll();
     }
 
     public function getAll(): Collection
     {
-        $statement = $this->pdo->prepare("
-            SELECT SQL_CALC_FOUND_ROWS
+        $statement = $this->pdo->prepare(
+            "SELECT SQL_CALC_FOUND_ROWS
             {$this->getFields()}
-            FROM {$this->tableGet} as `news`
+            FROM {$this->table} as `news`
             {$this->generateSqlJoin()}
             WHERE {$this->generateSqlFilters()}
             {$this->generateOrder()}
-            {$this->generateSqlLimit()}
-        ");
+            {$this->generateSqlLimit()}"
+        );
+
         $this->bind($statement);
+
         if ($statement->execute() === false) {
-            throw new Exception('ciebit.stories.storages.database.get_error', 2);
+            throw new Exception('ciebit.news.storages.database.get_error', 2);
         }
+
         $collection = new Collection;
-        $builder = new Builder;
         $newsData = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        $labels = null;
-        $labelsId = array_column($newsData, 'labels_id');
-        $labelsId = array_filter(
-            $labelsId,
-            function($ids) { return $ids != null; }
-        );
-        $labelsId = array_map(
-            function($ids){ return explode(',', $ids); },
-            $labelsId
-        );
-
-        $labelsId[] = [];
-        $labelsId = array_merge(...$labelsId);
-
-        if (count($labelsId) > 0) {
-            $labelsId = array_unique($labelsId);
-            $labels = $this->getLabels($labelsId);
+        if (count($newsData) < 1) {
+            return $collection;
         }
 
-        foreach ($newsData as $news) {
-            if ($labels instanceof LabelsCollection && $news['labels_id'] != null) {
-                $newsLabelsId = explode(',', $news['labels_id']);
-                $news['labels'] = new LabelsCollection;
-                foreach ($newsLabelsId as $id) {
-                    $news['labels']->add($labels->getById((int) $id));
+        $storiesId = array_column($newsData, 'story_id');
+        $storiesId = array_map('intval', $storiesId);
+        $storyStorage = clone $this->storyStorage;
+        $storyCollection = $storyStorage->addFilterById('=', ...$storiesId)->getAll();
+
+        $coversId = array_column($newsData, 'cover_id');
+        $coversId = array_map('intval', $coversId);
+        $filesStorage = clone $this->filesStorage;
+        $fileCollection = $filesStorage->addFilterByIds('=', ...$coversId)->getAll();
+
+        $newsId = array_column($newsData, 'id');
+        $sqlNewsId = implode(',', $newsId);
+        $statementLabels = $this->pdo->query(
+            "SELECT `news_id`, `label_id`
+            FROM {$this->tableLabelAssociation}
+            WHERE `news_id` IN ({$sqlNewsId})"
+        );
+        $labelsAndNewsAssossiation = $statementLabels->fetchAll(PDO::FETCH_ASSOC);
+        $labelCollection = new LabelsCollection;
+        if (count($labelsAndNewsAssossiation) > 0) {
+            $labelsIds = array_column($labelsAndNewsAssossiation, 'label_id');
+            $labelsIds = array_map('intval', $labelsIds);
+            $labelStorage = clone $this->labelStorage;
+            $labelStorage->addFilterByIds('IN', ...$labelsIds);
+            $labelCollection = $labelStorage->getAll();
+        }
+
+        foreach ($newsData as $newsItemData) {
+            $labels = new LabelsCollection;
+
+            foreach ($labelsAndNewsAssossiation as $assossiation) {
+                if ($assossiation['news_id'] != $newsItemData['id']) {
+                    continue;
                 }
+                $labels->add($labelCollection->getById((int) $assossiation['label_id']));
             }
-            $standarsizedData = $this->standardizeData($news);
-            $builder->setData($standarsizedData);
+
             $collection->add(
-                $builder->build()
+                $this->createNews(
+                    $newsItemData,
+                    $storyCollection->getById($newsItemData['story_id']),
+                    $fileCollection->getById((int) $newsItemData['cover_id']),
+                    $labels
+                )
             );
         }
+
         return $collection;
     }
 
@@ -250,25 +285,7 @@ class Sql extends SqlFilters implements Database
         return '
             `news`.`id`,
             `news`.`story_id`,
-            `news`.`story_title`,
-            `news`.`story_summary`,
-            `news`.`story_body`,
-            `news`.`story_datetime`,
-            `news`.`story_uri`,
-            `news`.`story_views`,
-            `news`.`story_status`,
             `news`.`cover_id`,
-            `news`.`cover_name`,
-            `news`.`cover_description`,
-            `news`.`cover_uri`,
-            `news`.`cover_extension`,
-            `news`.`cover_size`,
-            `news`.`cover_views`,
-            `news`.`cover_mimetype`,
-            `news`.`cover_date_hour`,
-            `news`.`cover_metadata`,
-            `news`.`cover_status`,
-            `news`.`labels_id`,
             `news`.`status`
         ';
     }
@@ -292,21 +309,15 @@ class Sql extends SqlFilters implements Database
         return $this;
     }
 
-    public function setTableGet(string $name): Database
-    {
-        $this->tableGet = $name;
-        return $this;
-    }
-
     public function setTableLabelAssociation(string $name): Database
     {
         $this->tableLabelAssociation = $name;
         return $this;
     }
 
-    public function setTableSave(string $name): Database
+    public function setTable(string $name): Database
     {
-        $this->tableSave = $name;
+        $this->table = $name;
         return $this;
     }
 

@@ -8,7 +8,7 @@ use Ciebit\Stories\Story;
 
 class News
 {
-    private $id; #:int
+    private $id; #:string
     private $story; #:Story
     private $image; #:?Image
     private $labels; #:LabelsCollection
@@ -16,13 +16,13 @@ class News
 
     public function __construct(Story $story, Status $status)
     {
-        $this->id = 0;
+        $this->id = '0';
         $this->labels = new LabelsCollection;
         $this->status = $status;
         $this->story = $story;
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -47,7 +47,7 @@ class News
         return $this->story;
     }
 
-    public function setId(int $id): self
+    public function setId(string $id): self
     {
         $this->id = $id;
         return $this;

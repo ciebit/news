@@ -7,19 +7,11 @@ use Ciebit\News\Status;
 
 interface Storage
 {
-    public function addFilterByBody(string $body, string $operator = '='): self;
+    public function addFilterById(string $operator, int ...$id): self;
 
-    public function addFilterById(int $id, string $operator = '='): self;
+    public function addFilterByLabelId(string $operator, int $id): self;
 
-    public function addFilterByLabelId(int $id, string $operator = '='): self;
-
-    public function addFilterByLabelUri(string $uri, string $operator = '='): self;
-
-    public function addFilterByStatus(Status $status, string $operator = '='): self;
-
-    public function addFilterByTitle(string $title, string $operator = '='): self;
-
-    public function addFilterByUri(string $uri, string $operator = '='): self;
+    public function addFilterByStatus(string $operator, Status $status): self;
 
     public function get(): ?News;
 
