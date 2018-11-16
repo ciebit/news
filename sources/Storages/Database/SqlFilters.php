@@ -13,6 +13,7 @@ abstract class SqlFilters
     private $joinSql; #: array
     private $offset; #int
     private $orderBy; #Array
+    private $valueKey = 0;
 
     protected function addBind(string $key, int $type, $value): self
     {
@@ -92,6 +93,11 @@ abstract class SqlFilters
 
         $sql = "ORDER BY " . implode(', ', $array);
         return $sql;
+    }
+
+    protected function generateValueKey(): string
+    {
+        return 'value_'. $this->valueKey++;
     }
 
     protected function setLimit(int $total): self
