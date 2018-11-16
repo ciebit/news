@@ -39,7 +39,7 @@ class DatabaseSqlTest extends Connection
     public function testGetAllBugUniqueValue(): void
     {
         $database = $this->getDatabase();
-        $database->addFilterByIds('=', 1, 2);
+        $database->addFilterById('=', 1, 2);
         $newsCollection = $database->getAll();
         $this->assertInstanceOf(Collection::class, $newsCollection);
     }
@@ -48,49 +48,26 @@ class DatabaseSqlTest extends Connection
     {
         $id = 3;
         $database = $this->getDatabase();
-        $database->addFilterById($id+0);
+        $database->addFilterById('=', $id+0);
         $newsCollection = $database->getAll();
-        $this->assertCount(1, $newsCollection->getIterator());
+        $this->assertCount(1, $newsCollection);
         $this->assertEquals($id, $newsCollection->getArrayObject()->offsetGet(0)->getId());
     }
 
     public function testGetAllFilterByStatus(): void
     {
         $database = $this->getDatabase();
-        $database->addFilterByStatus(Status::ACTIVE());
+        $database->addFilterByStatus('=', Status::ACTIVE());
         $newsCollection = $database->getAll();
         $this->assertCount(1, $newsCollection->getIterator());
         $this->assertEquals(Status::ACTIVE(), $newsCollection->getArrayObject()->offsetGet(0)->getStatus());
-    }
-
-    public function testGetFilterByBody(): void
-    {
-        $database = $this->getDatabase();
-        $database->getStoryStorage()->addFilterByBody('Text new 3');
-        $news = $database->get();
-        $this->assertEquals(3, $news->getId());
-
-        $database = $this->getDatabase();
-        $database->getStoryStorage()->addFilterByBody('%new 2', 'LIKE');
-        $news = $database->get();
-        $this->assertEquals(2, $news->getId());
-
-        $database = $this->getDatabase();
-        $database->getStoryStorage()->addFilterByBody('New five%', 'LIKE');
-        $news = $database->get();
-        $this->assertEquals(5, $news->getId());
-
-        $database = $this->getDatabase();
-        $database->getStoryStorage()->addFilterByBody('%five%', 'LIKE');
-        $news = $database->get();
-        $this->assertEquals(5, $news->getId());
     }
 
     public function testGetFilterById(): void
     {
         $id = 2;
         $database = $this->getDatabase();
-        $database->addFilterById($id+0);
+        $database->addFilterById('=', $id+0);
         $news = $database->get();
         $this->assertEquals($id, $news->getId());
     }
@@ -98,7 +75,7 @@ class DatabaseSqlTest extends Connection
     public function testGetFilterByIds(): void
     {
         $database = $this->getDatabase();
-        $database->addFilterByIds('=', 2, 3);
+        $database->addFilterById('=', 2, 3);
         $news = $database->getAll();
         $this->assertCount(2, $news);
         $this->assertEquals(2, $news->getById(2)->getId());
@@ -109,71 +86,24 @@ class DatabaseSqlTest extends Connection
     {
         $id = 2;
         $database = $this->getDatabase();
-        $database->addFilterByLabelId($id+0);
+        $database->addFilterByLabelId('=', $id+0);
         $news = $database->get();
         $this->assertEquals(2, $news->getId());
         $this->assertEquals(2, $news->getLabels()->getArrayObject()->offsetGet(0)->getId());
 
         $database = $this->getDatabase();
-        $database->addFilterByLabelId($id+0);
+        $database->addFilterByLabelId('=', $id+0);
         $news = $database->getAll();
-        $this->assertCount(1, $news);
+        $this->assertCount(2, $news);
         $this->assertEquals($id, $news->getArrayObject()->offsetGet(0)->getLabels()->getArrayObject()->offsetGet(0)->getId());
-    }
-
-    public function testGetFilterByLabelUri(): void
-    {
-        $uri = 'label-02';
-        $database = $this->getDatabase();
-        $database->addFilterByLabelUri($uri.'');
-        $news = $database->get();
-        $this->assertEquals(2, $news->getId());
-        $this->assertEquals(2, $news->getLabels()->getArrayObject()->offsetGet(0)->getId());
-
-        $database = $this->getDatabase();
-        $database->addFilterByLabelUri($uri.'');
-        $news = $database->getAll();
-        $this->assertCount(1, $news);
-        $this->assertEquals(2, $news->getArrayObject()->offsetGet(0)->getLabels()->getArrayObject()->offsetGet(0)->getId());
     }
 
     public function testGetFilterByStatus(): void
     {
         $database = $this->getDatabase();
-        $database->addFilterByStatus(Status::ACTIVE());
+        $database->addFilterByStatus('=', Status::ACTIVE());
         $news = $database->get();
         $this->assertEquals(Status::ACTIVE(), $news->getStatus());
-    }
-
-    public function testGetFilterByTitle(): void
-    {
-        $database = $this->getDatabase();
-        $database->addFilterByTitle('Title New 3');
-        $news = $database->get();
-        $this->assertEquals(3, $news->getId());
-
-        $database = $this->getDatabase();
-        $database->addFilterByTitle('%New 2', 'LIKE');
-        $news = $database->get();
-        $this->assertEquals(2, $news->getId());
-
-        $database = $this->getDatabase();
-        $database->addFilterByTitle('New five%', 'LIKE');
-        $news = $database->get();
-        $this->assertEquals(5, $news->getId());
-
-        $database = $this->getDatabase();
-        $database->addFilterByTitle('%five%', 'LIKE');
-        $news = $database->get();
-        $this->assertEquals(5, $news->getId());
-    }
-
-    public function testGetFilterByUri(): void
-    {
-        $database = $this->getDatabase();
-        $database->addFilterByUri('title-new-3');
-        $news = $database->get();
-        $this->assertEquals(3, $news->getId());
     }
 
     public function testGetAllByOrderDesc(): void
@@ -189,7 +119,7 @@ class DatabaseSqlTest extends Connection
         $id = 2;
         $views = 13;
         $database = $this->getDatabase();
-        $database->addFilterById($id+0);
+        $database->addFilterById('=', $id+0);
         $news = $database->get();
         $news->getStory()->setViews($views+0);
         $news = $database->update($news)->get();
