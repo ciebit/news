@@ -1,5 +1,5 @@
 <?php
-namespace Ciebit\News\Tests\Storages;
+namespace Ciebit\News\Tests\Storages\Database;
 
 use Ciebit\Files\Storages\Database\Sql as FilesStorage;
 use Ciebit\Labels\Storages\Database\Sql as LabelsStorage;
@@ -11,7 +11,7 @@ use Ciebit\News\Storages\Database\Sql as DatabaseSql;
 use Ciebit\News\Tests\Connection;
 use ArrayObject;
 
-class DatabaseSqlTest extends Connection
+class SqlTest extends Connection
 {
     public function getDatabase(): DatabaseSql
     {
@@ -111,6 +111,14 @@ class DatabaseSqlTest extends Connection
         $this->assertEquals(2, $news->getId());
     }
 
+    public function testGetFilterByUri(): void
+    {
+        $database = $this->getDatabase();
+        $database->addFilterByUri('=', 'title-new-3');
+        $news = $database->get();
+        $this->assertEquals(3, $news->getId());
+    }
+
     public function testGetAll(): void
     {
         $database = $this->getDatabase();
@@ -166,6 +174,14 @@ class DatabaseSqlTest extends Connection
     {
         $database = $this->getDatabase();
         $database->addFilterByTitle('LIKE', 'Title New%');
+        $newsCollection = $database->getAll();
+        $this->assertCount(4, $newsCollection);
+    }
+
+    public function testGetAllFilterByUri(): void
+    {
+        $database = $this->getDatabase();
+        $database->addFilterByUri('LIKE', 'title-new-%');
         $newsCollection = $database->getAll();
         $this->assertCount(4, $newsCollection);
     }

@@ -20,6 +20,8 @@ interface Database extends Storage
 
     public function addFilterByTitle(string $operator, string $title): self;
 
+    public function addFilterByUri(string $operator, string $uri): self;
+
     public function get(): ?News;
 
     public function getAll(): Collection;

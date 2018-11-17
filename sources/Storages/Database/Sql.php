@@ -124,6 +124,17 @@ class Sql extends SqlFilters implements Database
         return $this;
     }
 
+    public function addFilterByUri(string $operator, string $uri): Database
+    {
+        $key = $this->generateValueKey();
+        $field = "`{$this->table}`.`uri`";
+        $sql = "{$field} {$operator} :{$key}";
+
+        $this->addfilter($key, $sql, PDO::PARAM_STR, $uri);
+
+        return $this;
+    }
+
     public function createNews(
         array $newsData,
         ?Image $cover,
