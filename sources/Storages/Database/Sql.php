@@ -47,6 +47,17 @@ class Sql extends SqlFilters implements Database
         $this->tableLabelAssociation = 'cb_news_labels';
     }
 
+    public function addFilterByBody(string $operator, string $body): Database
+    {
+        $key = $this->generateValueKey();
+        $field = "`{$this->table}`.`body`";
+        $sql = "{$field} {$operator} :{$key}";
+
+        $this->addfilter($key, $sql, PDO::PARAM_STR, $body);
+
+        return $this;
+    }
+
     public function addFilterById(string $operator, string ...$ids): Database
     {
         $field = "`{$this->table}`.`id`";
@@ -82,12 +93,14 @@ class Sql extends SqlFilters implements Database
         return $this;
     }
 
-    public function addFilterByStoryId(string $operator, string $id): Database
+    public function addFilterByLanguage(string $operator, string $language): Database
     {
         $key = $this->generateValueKey();
-        $sql = "`{$this->table}`.`story_id` {$operator} :{$key}";
-        $this->addFilter($key, $sql, PDO::PARAM_INT, $id);
-        $this->localFilter = true;
+        $field = "`{$this->table}`.`language`";
+        $sql = "{$field} {$operator} :{$key}";
+
+        $this->addfilter($key, $sql, PDO::PARAM_STR, $language);
+
         return $this;
     }
 
@@ -100,6 +113,17 @@ class Sql extends SqlFilters implements Database
         return $this;
     }
 
+    public function addFilterByTitle(string $operator, string $title): Database
+    {
+        $key = $this->generateValueKey();
+        $field = "`{$this->table}`.`title`";
+        $sql = "{$field} {$operator} :{$key}";
+
+        $this->addfilter($key, $sql, PDO::PARAM_STR, $title);
+
+        return $this;
+    }
+
     public function createNews(
         array $newsData,
         ?Image $cover,
@@ -108,8 +132,9 @@ class Sql extends SqlFilters implements Database
         $status = new Status((int) $newsData['status']);
         $news = new News($newsData['title'], $status);
         $news->setId($newsData['id'])
-        ->setBody($newsData['body'])
-        ->setUri($newsData['uri'])
+        ->setBody((string) $newsData['body'])
+        ->setSummary((string) $newsData['summary'])
+        ->setUri((string) $newsData['uri'])
         ->setViews((int) $newsData['views'])
         ->setLanguage((string) $newsData['language'])
         ->setLabels($labels);
@@ -119,9 +144,9 @@ class Sql extends SqlFilters implements Database
         }
 
         if ($newsData['languages_references'] != null) {
-            $languageReferences = json_decode($this->newsData['languages_references'], true);
+            $languageReferences = json_decode($newsData['languages_references'], true);
             foreach ($languageReferences as $languageCode => $id) {
-                $story->addLanguageReference(new LanguageReference($languageCode, $id));
+                $news->addLanguageReference(new LanguageReference($languageCode, $id));
             }
         }
 

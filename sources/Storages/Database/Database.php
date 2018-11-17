@@ -8,11 +8,17 @@ use Ciebit\News\Storages\Storage;
 
 interface Database extends Storage
 {
+    public function addFilterByBody(string $operator, string $title): self;
+
     public function addFilterById(string $operator, string ...$ids): self;
 
     public function addFilterByLabelId(string $operator, int $id): self;
 
+    public function addFilterByLanguage(string $operator, string $language): self
+    ;
     public function addFilterByStatus(string $operator, Status $status): self;
+
+    public function addFilterByTitle(string $operator, string $title): self;
 
     public function get(): ?News;
 

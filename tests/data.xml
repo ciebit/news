@@ -9,6 +9,8 @@
         <column>datetime</column>
         <column>uri</column>
         <column>views</column>
+        <column>language</column>
+        <column>languages_references</column>
         <column>status</column>
         <row>
             <value>1</value>
@@ -19,6 +21,8 @@
             <value>2018-07-29 16:26:00</value>
             <value>title-new-1</value>
             <value>11</value>
+            <value>pt-BR</value>
+            <value>{"en": 2, "es":3}</value>
             <value>1</value>
         </row>
         <row>
@@ -30,6 +34,8 @@
             <value>2018-07-30 16:27:00</value>
             <value>title-new-2</value>
             <value>12</value>
+            <value>en</value>
+            <value>{"pt-BR": 1, "es": 3}</value>
             <value>2</value>
         </row>
         <row>
@@ -41,6 +47,8 @@
             <value>2018-06-10 16:28:00</value>
             <value>title-new-3</value>
             <value>13</value>
+            <value>es</value>
+            <value>{"pt-BR": 1, "en": 2}</value>
             <value>3</value>
         </row>
         <row>
@@ -52,6 +60,8 @@
             <value>2018-09-09 16:05:00</value>
             <value>title-new-4</value>
             <value>159</value>
+            <value>pt-BR</value>
+            <null/>
             <value>4</value>
         </row>
         <row>
@@ -63,6 +73,8 @@
             <value>2018-08-13 10:01:00</value>
             <value>title-new-5</value>
             <value>1</value>
+            <value>en</value>
+            <null/>
             <value>3</value>
         </row>
         <row>
@@ -70,10 +82,12 @@
             <null/>
             <value>New Six Title</value>
             <value>New six summary</value>
-            <value>New five text</value>
+            <value>New six text</value>
             <value>2018-08-10 10:01:00</value>
             <value>title-new-5</value>
             <value>1</value>
+            <value>es</value>
+            <value>{"en": 5}</value>
             <value>3</value>
         </row>
     </table>
