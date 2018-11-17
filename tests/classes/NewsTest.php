@@ -1,15 +1,13 @@
 <?php
 namespace Ciebit\News\Tests;
 
+use Ciebit\Files\Images\Image;
+use Ciebit\Files\Status as FileStatus;
 use Ciebit\Labels\Collection as LabelsCollection;
 use Ciebit\Labels\Label;
 use Ciebit\Labels\Status as LabelStatus;
 use Ciebit\News\News;
 use Ciebit\News\Status;
-use Ciebit\Stories\Story;
-use Ciebit\Files\Images\Image;
-use Ciebit\Files\Status as FileStatus;
-use Ciebit\Stories\Status as StoryStatus;
 use PHPUnit\Framework\TestCase;
 
 class NewsTest extends TestCase
@@ -24,9 +22,8 @@ class NewsTest extends TestCase
     const LABEL_TITLE = 'Label Title';
     const LABEL_URI = 'label-title';
     const LABEL_STATUS = 2;
-    const STATUS = 1;
-    const STORY_TITLE = 'Story Title';
-    const STORY_STATUS = 3;
+    const STATUS = 3;
+    const TITLE = 'New Title';
 
     public function testCreateFromManual(): void
     {
@@ -39,11 +36,6 @@ class NewsTest extends TestCase
             new FileStatus(self::IMAGE_STATUS)
         );
 
-        $story = new Story(
-            self::STORY_TITLE,
-            new StoryStatus(self::STORY_STATUS)
-        );
-
         $labels = new LabelsCollection;
         $labels->add(new Label(
             self::LABEL_TITLE,
@@ -51,23 +43,16 @@ class NewsTest extends TestCase
             new LabelStatus(self::LABEL_STATUS)
         ));
 
-        $news = new News($story, new Status(self::STATUS));
+        $news = new News(self::TITLE, new Status(self::STATUS));
         $news->setId(self::ID)
-        ->setImage($image)
+        ->setCover($image)
         ->setLabels($labels);
 
         $this->assertEquals(self::ID, $news->getId());
         $this->assertEquals(self::STATUS, $news->getStatus()->getValue());
-        $this->assertInstanceof(Story::class, $news->getStory());
-        $this->assertEquals(self::STORY_TITLE, $news->getStory()->getTitle());
-        $this->assertEquals(self::STORY_STATUS, $news->getStory()->getStatus()->getValue());
+        $this->assertEquals(self::TITLE, $news->getTitle());
+        $this->assertEquals(self::STATUS, $news->getStatus()->getValue());
         $this->assertInstanceof(Image::class, $news->getCover());
-        $this->assertEquals(self::IMAGE_NAME, $news->getCover()->getName());
-        $this->assertEquals(self::IMAGE_MIMETYPE, $news->getCover()->getMimetype());
-        $this->assertEquals(self::IMAGE_URI, $news->getCover()->getUri());
-        $this->assertEquals(self::IMAGE_WIDTH, $news->getCover()->getWidth());
-        $this->assertEquals(self::IMAGE_HEIGHT, $news->getCover()->getHeight());
-        $this->assertEquals(self::IMAGE_STATUS, $news->getCover()->getStatus()->getValue());
 
         $newLabels = $news->getLabels();
         $this->assertInstanceof(LabelsCollection::class, $newLabels);

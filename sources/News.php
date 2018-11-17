@@ -6,25 +6,15 @@ use Ciebit\Labels\Collection as LabelsCollection;
 use Ciebit\News\Status;
 use Ciebit\Stories\Story;
 
-class News
+class News extends Story
 {
-    private $id; #:string
-    private $story; #:Story
     private $image; #:?Image
     private $labels; #:LabelsCollection
-    private $status; #:Status
 
-    public function __construct(Story $story, Status $status)
+    public function __construct(string $title, Status $status)
     {
-        $this->id = '0';
+        parent::__construct($title, $status);
         $this->labels = new LabelsCollection;
-        $this->status = $status;
-        $this->story = $story;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     public function getCover(): ?Image
@@ -37,23 +27,7 @@ class News
         return $this->labels;
     }
 
-    public function getStatus(): Status
-    {
-        return $this->status;
-    }
-
-    public function getStory(): Story
-    {
-        return $this->story;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function setImage(Image $image): self
+    public function setCover(Image $image): self
     {
         $this->image = $image;
         return $this;

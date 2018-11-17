@@ -1,13 +1,8 @@
 <?php
 namespace Ciebit\News;
 
-use MyCLabs\Enum\Enum;
+use Ciebit\Stories\Status as StoryStatus;
 
-class Status extends Enum
+class Status extends StoryStatus
 {
-    const DRAFT = 1;
-    const ANALYZE = 2;
-    const ACTIVE = 3;
-    const TRASH = 4;
-    const INACTIVE = 5;
 }
