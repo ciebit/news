@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3bfec1aedbd093da25457246d64e6483",
+    "content-hash": "e1389587d7f7b28eca4bf4dd24dd11b1",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.72.0",
+            "version": "3.72.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "990fc104600d0da59b0229e04c008abd16c5d0ee"
+                "reference": "5e36d7d70917133a244f62ff81d38871669951b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/990fc104600d0da59b0229e04c008abd16c5d0ee",
-                "reference": "990fc104600d0da59b0229e04c008abd16c5d0ee",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5e36d7d70917133a244f62ff81d38871669951b5",
+                "reference": "5e36d7d70917133a244f62ff81d38871669951b5",
                 "shasum": ""
             },
             "require": {
@@ -87,7 +87,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-11-15T23:57:11+00:00"
+            "time": "2018-11-16T21:17:38+00:00"
         },
         {
             "name": "ciebit/files",
@@ -199,16 +199,16 @@
         },
         {
             "name": "ciebit/stories",
-            "version": "v0.6.0",
+            "version": "v0.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ciebit/stories.git",
-                "reference": "6bcdb522ddc04787c83d72e3feffd23a433f8af9"
+                "reference": "c207443959d824529bc5702c7fcdf4ef56e6ff85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ciebit/stories/zipball/6bcdb522ddc04787c83d72e3feffd23a433f8af9",
-                "reference": "6bcdb522ddc04787c83d72e3feffd23a433f8af9",
+                "url": "https://api.github.com/repos/ciebit/stories/zipball/c207443959d824529bc5702c7fcdf4ef56e6ff85",
+                "reference": "c207443959d824529bc5702c7fcdf4ef56e6ff85",
                 "shasum": ""
             },
             "require": {
@@ -244,7 +244,7 @@
                 "notícias",
                 "story"
             ],
-            "time": "2018-11-16T20:43:43+00:00"
+            "time": "2018-11-17T00:04:05+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
