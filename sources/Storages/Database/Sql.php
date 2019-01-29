@@ -34,6 +34,7 @@ class Sql extends SqlFilters implements Database
     private $pdo; # PDO
     private $table; # string
     private $tableLabelAssociation; # string
+    private $totalItemsLastQuery; # int
 
     public function __construct(
         PDO $pdo,
@@ -45,6 +46,7 @@ class Sql extends SqlFilters implements Database
         $this->pdo = $pdo;
         $this->table = 'cb_news';
         $this->tableLabelAssociation = 'cb_news_labels';
+        $this->totalItemsLastQuery = 0;
     }
 
     public function addFilterByBody(string $operator, string $body): Database
@@ -174,7 +176,7 @@ class Sql extends SqlFilters implements Database
     public function get(): ?News
     {
         $statement = $this->pdo->prepare("
-            SELECT
+            SELECT SQL_CALC_FOUND_ROWS
             {$this->getFields()}
             FROM {$this->table}
             {$this->generateSqlJoin()}
@@ -188,6 +190,8 @@ class Sql extends SqlFilters implements Database
         if ($statement->execute() === false) {
             throw new Exception('ciebit.news.storages.database.get_error', 2);
         }
+
+        $this->totalItemsLastQuery = (int) $this->pdo->query('SELECT FOUND_ROWS()')->fetchColumn();
 
         $newsData = $statement->fetch(PDO::FETCH_ASSOC);
 
@@ -254,6 +258,8 @@ class Sql extends SqlFilters implements Database
         if ($statement->execute() === false) {
             throw new Exception('ciebit.news.storages.database.get_error', 2);
         }
+
+        $this->totalItemsLastQuery = (int) $this->pdo->query('SELECT FOUND_ROWS()')->fetchColumn();
 
         $collection = new Collection;
         $newsData = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -333,7 +339,7 @@ class Sql extends SqlFilters implements Database
 
     public function getTotalItems(): int
     {
-        return (int) $this->pdo->query('SELECT FOUND_ROWS()')->fetchColumn();
+        return $this->totalItemsLastQuery;
     }
 
     public function setStartingItem(int $lineInit): Database
