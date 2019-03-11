@@ -4,23 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e591bf2eb511939cd57e45f4e1b50b14",
+    "content-hash": "386d4206df4657066fdacd5252eb2c2d",
     "packages": [
         {
             "name": "ciebit/files",
-            "version": "v1.0.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ciebit/files.git",
-                "reference": "541b30519a12f06f2ed436cfc807035b0ef6ded3"
+                "reference": "199f9e339a87afd5708fa5511803be7a228cbf19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ciebit/files/zipball/541b30519a12f06f2ed436cfc807035b0ef6ded3",
-                "reference": "541b30519a12f06f2ed436cfc807035b0ef6ded3",
+                "url": "https://api.github.com/repos/ciebit/files/zipball/199f9e339a87afd5708fa5511803be7a228cbf19",
+                "reference": "199f9e339a87afd5708fa5511803be7a228cbf19",
                 "shasum": ""
             },
             "require": {
+                "ciebit/labels": "^1.0.0",
                 "ciebit/sql-helper": "^1.0.0",
                 "myclabs/php-enum": "^1.6.2",
                 "php": "^7.1"
@@ -59,29 +60,30 @@
                 "files",
                 "imagens"
             ],
-            "time": "2019-02-21T11:53:15+00:00"
+            "time": "2019-03-11T21:54:46+00:00"
         },
         {
             "name": "ciebit/labels",
-            "version": "v0.2.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ciebit/labels.git",
-                "reference": "37eaa1ac02be6fa9d7b01804bf96cc5af08de623"
+                "reference": "73632eb81a6e5e50643b0960a2e29102b0d0502c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ciebit/labels/zipball/37eaa1ac02be6fa9d7b01804bf96cc5af08de623",
-                "reference": "37eaa1ac02be6fa9d7b01804bf96cc5af08de623",
+                "url": "https://api.github.com/repos/ciebit/labels/zipball/73632eb81a6e5e50643b0960a2e29102b0d0502c",
+                "reference": "73632eb81a6e5e50643b0960a2e29102b0d0502c",
                 "shasum": ""
             },
             "require": {
+                "ciebit/sql-helper": "^1.0.0",
                 "myclabs/php-enum": "^1.6.2",
                 "php": "^7.1"
             },
             "require-dev": {
-                "phpunit/dbunit": "^3.0",
-                "phpunit/phpunit": "^6.4"
+                "php": "^7.2",
+                "phpunit/phpunit": "^8.0"
             },
             "type": "library",
             "autoload": {
@@ -112,7 +114,7 @@
                 "labels",
                 "marcadores"
             ],
-            "time": "2018-12-09T19:21:33+00:00"
+            "time": "2019-03-11T21:31:28+00:00"
         },
         {
             "name": "ciebit/sql-helper",
@@ -1113,6 +1115,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2018-08-09T05:50:03+00:00"
         },
         {

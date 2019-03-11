@@ -58,7 +58,7 @@ class NewsTest extends TestCase
         $this->assertInstanceof(LabelsCollection::class, $newLabels);
         $label = $newLabels->getArrayObject()->offsetGet(0);
         $this->assertEquals(self::LABEL_TITLE, $label->getTitle());
-        $this->assertEquals(self::LABEL_URI, $label->getUri());
+        $this->assertEquals(self::LABEL_URI, $label->getSlug());
         $this->assertEquals(self::LABEL_STATUS, $label->getStatus()->getValue());
     }
 }

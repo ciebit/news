@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
-
 namespace Ciebit\News\Storages\Database;
 
 use Ciebit\Labels\Collection as LabelsCollection;
 use Ciebit\Labels\Storages\Storage as LabelStorage;
+use Ciebit\Files\Collection as FilesCollection;
 use Ciebit\Files\Images\Image;
 use Ciebit\Files\Storages\Storage as FilesStorage;
 use Ciebit\News\Collection;
@@ -234,11 +233,10 @@ class Sql extends SqlFilters implements Database
         }
 
         $ids = array_column($labelsData, 'label_id');
-        $ids = array_map('intval', $ids);
 
         $labelsStorage = clone $this->labelStorage;
-        $labelsStorage->addFilterByIds('=', ...$ids);
-        return $labelsStorage->getAll();
+        $labelsStorage->addFilterById('=', ...$ids);
+        return $labelsStorage->findAll();
     }
 
     public function getAll(): Collection
@@ -269,8 +267,11 @@ class Sql extends SqlFilters implements Database
         }
 
         $coversId = array_filter(array_column($newsData, 'cover_id'));
-        $filesStorage = clone $this->filesStorage;
-        $fileCollection = $filesStorage->addFilterById('=', ...$coversId)->findAll();
+        $fileCollection = new FilesCollection;
+        if (! empty($coversId)) {
+            $filesStorage = clone $this->filesStorage;
+            $fileCollection = $filesStorage->addFilterById('=', ...$coversId)->findAll();
+        }
 
         $newsId = array_column($newsData, 'id');
         $sqlNewsId = implode(',', $newsId);
@@ -283,10 +284,10 @@ class Sql extends SqlFilters implements Database
         $labelCollection = new LabelsCollection;
         if (count($labelsAndNewsAssossiation) > 0) {
             $labelsIds = array_column($labelsAndNewsAssossiation, 'label_id');
-            $labelsIds = array_map('intval', $labelsIds);
+            $labelsIds = array_unique($labelsIds);
             $labelStorage = clone $this->labelStorage;
-            $labelStorage->addFilterByIds('IN', ...$labelsIds);
-            $labelCollection = $labelStorage->getAll();
+            $labelStorage->addFilterById('=', ...$labelsIds);
+            $labelCollection = $labelStorage->findAll();
         }
 
         foreach ($newsData as $newsItemData) {

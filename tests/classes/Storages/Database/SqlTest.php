@@ -16,8 +16,8 @@ class SqlTest extends Connection
     public function getDatabase(): DatabaseSql
     {
         $pdo = $this->getPdo();
-        $filesStorage = new FilesStorage($pdo);
         $labelStorage = new LabelsStorage($pdo);
+        $filesStorage = new FilesStorage($pdo, $labelStorage);
         return new DatabaseSql($pdo, $filesStorage, $labelStorage);
     }
 

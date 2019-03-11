@@ -95,8 +95,8 @@
     <table name="cb_labels">
         <column>id</column>
         <column>title</column>
-        <column>ascendants_id</column>
-        <column>uri</column>
+        <column>parent_id</column>
+        <column>slug</column>
         <column>status</column>
         <row>
             <value>1</value>
@@ -115,7 +115,7 @@
         <row>
             <value>3</value>
             <value>Label 03</value>
-            <value>1,2</value>
+            <value>2</value>
             <value>label-03</value>
             <value>3</value>
         </row>
