@@ -202,8 +202,8 @@ class Sql extends SqlFilters implements Database
         $cover = null;
         if ($newsData['cover_id'] != null) {
             $filesStorage = clone $this->filesStorage;
-            $filesStorage->addFilterById((int) $newsData['cover_id']);
-            $cover = $filesStorage->get();
+            $filesStorage->addFilterById('=', $newsData['cover_id']);
+            $cover = $filesStorage->findOne();
         }
 
         $labels = $this->getLabelsByNewsId($newsData['id']);
@@ -268,10 +268,9 @@ class Sql extends SqlFilters implements Database
             return $collection;
         }
 
-        $coversId = array_column($newsData, 'cover_id');
-        $coversId = array_map('intval', $coversId);
+        $coversId = array_filter(array_column($newsData, 'cover_id'));
         $filesStorage = clone $this->filesStorage;
-        $fileCollection = $filesStorage->addFilterByIds('=', ...$coversId)->getAll();
+        $fileCollection = $filesStorage->addFilterById('=', ...$coversId)->findAll();
 
         $newsId = array_column($newsData, 'id');
         $sqlNewsId = implode(',', $newsId);
@@ -300,10 +299,15 @@ class Sql extends SqlFilters implements Database
                 $labels->add($labelCollection->getById((int) $assossiation['label_id']));
             }
 
+            $file = null;
+            if (! empty($newsItemData['cover_id'])) {
+                $file = $fileCollection->getById($newsItemData['cover_id']);
+            }
+
             $collection->add(
                 $this->createNews(
                     $newsItemData,
-                    $fileCollection->getById((int) $newsItemData['cover_id']),
+                    $file,
                     $labels
                 )
             );

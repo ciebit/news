@@ -165,23 +165,19 @@
     <table name="cb_files">
         <column>id</column>
         <column>name</column>
-        <column>caption</column>
         <column>description</column>
-        <column>uri</column>
-        <column>extension</column>
+        <column>url</column>
         <column>size</column>
         <column>views</column>
         <column>mimetype</column>
-        <column>date_hour</column>
+        <column>datetime</column>
         <column>metadata</column>
         <column>status</column>
         <row>
             <value>1</value>
             <value>Title File 1</value>
-            <value>Legenda 1</value>
             <value>Descrição 1</value>
             <value>title-file-1.jpg</value>
-            <value>jpg</value>
             <value>10</value>
             <value>0</value>
             <value>image/jpeg</value>
@@ -192,10 +188,8 @@
         <row>
             <value>2</value>
             <value>Title File 2</value>
-            <value>Legenda 2</value>
             <value>Descrição 2</value>
             <value>title-file-2.jpg</value>
-            <value>jpg</value>
             <value>20</value>
             <value>1205</value>
             <value>image/jpeg</value>
@@ -206,10 +200,8 @@
         <row>
             <value>3</value>
             <value>Title File 3</value>
-            <value>Legenda 3</value>
             <value>Descrição 3</value>
             <value>title-file-3.jpg</value>
-            <value>jpg</value>
             <value>30</value>
             <value>100000</value>
             <value>image/jpeg</value>
@@ -220,10 +212,8 @@
         <row>
             <value>4</value>
             <value>Title File 4</value>
-            <value>Legenda 4</value>
             <value>Descrição 4</value>
             <value>title-file-4.jpg</value>
-            <value>jpg</value>
             <value>40</value>
             <value>5058</value>
             <value>image/jpeg</value>
@@ -234,10 +224,8 @@
         <row>
             <value>5</value>
             <value>Title File 5</value>
-            <value>Legenda 5</value>
             <value>Descrição 5</value>
             <value>title-file-5.jpg</value>
-            <value>jpg</value>
             <value>40</value>
             <value>5058</value>
             <value>image/jpeg</value>
