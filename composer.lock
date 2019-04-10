@@ -4,8 +4,49 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d5931ed98c381fe7b227c36c79ac098",
+    "content-hash": "87a917057124f91cdec73a9b71eac3da",
     "packages": [
+        {
+            "name": "ciebit/sql-helper",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ciebit/sql-helper.git",
+                "reference": "4285d147aac9ec4c380c0889b640bbccbcf46cd0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ciebit/sql-helper/zipball/4285d147aac9ec4c380c0889b640bbccbcf46cd0",
+                "reference": "4285d147aac9ec4c380c0889b640bbccbcf46cd0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ciebit\\SqlHelper\\": "source/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Johnny Saymon",
+                    "email": "saymon@ciebit.com",
+                    "homepage": "http://saymon.ciebit.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Helper para montar fragmentos de querys SQL",
+            "time": "2019-02-15T12:07:14+00:00"
+        },
         {
             "name": "myclabs/php-enum",
             "version": "1.6.6",

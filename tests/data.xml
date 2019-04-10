@@ -7,7 +7,7 @@
         <column>summary</column>
         <column>body</column>
         <column>datetime</column>
-        <column>uri</column>
+        <column>slug</column>
         <column>views</column>
         <column>language</column>
         <column>languages_references</column>
@@ -92,35 +92,6 @@
         </row>
     </table>
 
-    <table name="cb_labels">
-        <column>id</column>
-        <column>title</column>
-        <column>parent_id</column>
-        <column>slug</column>
-        <column>status</column>
-        <row>
-            <value>1</value>
-            <value>Label 01</value>
-            <null/>
-            <value>label-01</value>
-            <value>3</value>
-        </row>
-        <row>
-            <value>2</value>
-            <value>Label 02</value>
-            <value>1</value>
-            <value>label-02</value>
-            <value>3</value>
-        </row>
-        <row>
-            <value>3</value>
-            <value>Label 03</value>
-            <value>2</value>
-            <value>label-03</value>
-            <value>3</value>
-        </row>
-    </table>
-
     <table name="cb_news_labels">
         <column>id</column>
         <column>news_id</column>
@@ -159,79 +130,6 @@
             <value>7</value>
             <value>1</value>
             <value>3</value>
-        </row>
-    </table>
-
-    <table name="cb_files">
-        <column>id</column>
-        <column>name</column>
-        <column>description</column>
-        <column>url</column>
-        <column>size</column>
-        <column>views</column>
-        <column>mimetype</column>
-        <column>datetime</column>
-        <column>metadata</column>
-        <column>status</column>
-        <row>
-            <value>1</value>
-            <value>Title File 1</value>
-            <value>Descrição 1</value>
-            <value>title-file-1.jpg</value>
-            <value>10</value>
-            <value>0</value>
-            <value>image/jpeg</value>
-            <value>2018-05-26</value>
-            <value>{"width": 600, "height": 150}</value>
-            <value>1</value>
-        </row>
-        <row>
-            <value>2</value>
-            <value>Title File 2</value>
-            <value>Descrição 2</value>
-            <value>title-file-2.jpg</value>
-            <value>20</value>
-            <value>1205</value>
-            <value>image/jpeg</value>
-            <value>2017-10-15</value>
-            <value>{"width": 900, "height": 500}</value>
-            <value>2</value>
-        </row>
-        <row>
-            <value>3</value>
-            <value>Title File 3</value>
-            <value>Descrição 3</value>
-            <value>title-file-3.jpg</value>
-            <value>30</value>
-            <value>100000</value>
-            <value>image/jpeg</value>
-            <value>2017-08-11</value>
-            <value>{"width": 130, "height": 50}</value>
-            <value>3</value>
-        </row>
-        <row>
-            <value>4</value>
-            <value>Title File 4</value>
-            <value>Descrição 4</value>
-            <value>title-file-4.jpg</value>
-            <value>40</value>
-            <value>5058</value>
-            <value>image/jpeg</value>
-            <value>2017-01-19</value>
-            <value>{"width": 130, "height": 50}</value>
-            <value>4</value>
-        </row>
-        <row>
-            <value>5</value>
-            <value>Title File 5</value>
-            <value>Descrição 5</value>
-            <value>title-file-5.jpg</value>
-            <value>40</value>
-            <value>5058</value>
-            <value>image/jpeg</value>
-            <value>2018-08-14</value>
-            <value>{"width": 130, "height": 50}</value>
-            <value>4</value>
         </row>
     </table>
 </dataset>

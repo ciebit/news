@@ -59,12 +59,6 @@ class News
         $this->views = 0;
     }
 
-    public function addLabelsId(int ...$ids): self
-    {
-        $this->labelsId = $ids;
-        return $this;
-    }
-
     public function addLanguageReference(LanguageReference $languageReference): self
     {
         $this->languageReferences[] = $languageReference;
@@ -101,7 +95,7 @@ class News
 
     public function getSlug(): string
     {
-        return $this->uri;
+        return $this->slug;
     }
 
     public function getStatus(): Status
@@ -129,7 +123,7 @@ class News
         return $this->language;
     }
 
-    public function getLanguageReferences(): ArrayObject
+    public function getLanguageReferences(): array
     {
         return $this->languageReferences;
     }
@@ -159,6 +153,12 @@ class News
     public function setId(string $id): self
     {
         $this->id = $id;
+        return $this;
+    }
+
+    public function setLabelsId(string ...$ids): self
+    {
+        $this->labelsId = $ids;
         return $this;
     }
 

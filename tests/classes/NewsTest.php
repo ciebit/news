@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Ciebit\News\Tests;
 
 use Ciebit\News\News;
@@ -8,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 class NewsTest extends TestCase
 {
     const COVER_ID = '5';
-    const ID = 2;
+    const ID = '2';
     const LABELS_ID = ['3','4'];
     const STATUS = 3;
     const TITLE = 'New Title';
@@ -18,7 +20,7 @@ class NewsTest extends TestCase
         $news = new News(self::TITLE, new Status(self::STATUS));
         $news->setId(self::ID)
         ->setCoverId(self::COVER_ID)
-        ->addLabelsId(...self::LABELS_ID);
+        ->setLabelsId(...self::LABELS_ID);
 
         $this->assertEquals(self::ID, $news->getId());
         $this->assertEquals(self::STATUS, $news->getStatus()->getValue());
