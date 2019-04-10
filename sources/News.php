@@ -146,7 +146,7 @@ class News
 
     public function setCoverId(string $id): self
     {
-        $this->image = $id;
+        $this->coverId = $id;
         return $this;
     }
 
