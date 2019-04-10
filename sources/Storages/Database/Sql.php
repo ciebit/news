@@ -20,7 +20,7 @@ use function intval;
 class Sql implements Database
 {
     /** @var string */
-    private const COLUMN_ID = 'id';
+    private const COLUMN_AUTHOR_ID = 'author_id';
 
     /** @var string */
     private const COLUMN_BODY = 'body';
@@ -30,6 +30,9 @@ class Sql implements Database
 
     /** @var string */
     private const COLUMN_DATETIME = 'datetime';
+
+    /** @var string */
+    private const COLUMN_ID = 'id';
 
     /** @var string */
     private const COLUMN_LABEL_ID = 'id';
@@ -94,6 +97,13 @@ class Sql implements Database
     {
         $field = "`{$this->table}`.`{$fieldName}`";
         $this->sqlHelper->addFilterBy($field, $type, $operator, ...$value);
+        return $this;
+    }
+
+    public function addFilterByAuthorId(string $operator, string ...$id): Storage
+    {
+        $id = array_map('intval', $id);
+        $this->addFilter(self::COLUMN_AUTHOR_ID, PDO::PARAM_INT, $operator, ...$id);
         return $this;
     }
 
@@ -166,6 +176,7 @@ class Sql implements Database
         $news = new News($newsData['title'], $status);
         $news->setId($newsData['id'])
         ->setCoverId((string) $newsData['cover_id'])
+        ->setAuthorId((string) $newsData['author_id'])
         ->setBody((string) $newsData['body'])
         ->setSummary((string) $newsData['summary'])
         ->setSlug((string) $newsData['slug'])
@@ -250,6 +261,7 @@ class Sql implements Database
         return "
             `{$this->table}`.`". self::COLUMN_ID ."`,
             `{$this->table}`.`". self::COLUMN_COVER_ID ."`,
+            `{$this->table}`.`". self::COLUMN_AUTHOR_ID ."`,
             `{$this->table}`.`". self::COLUMN_TITLE ."`,
             `{$this->table}`.`". self::COLUMN_SUMMARY ."`,
             `{$this->table}`.`". self::COLUMN_BODY ."`,

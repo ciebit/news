@@ -8,6 +8,9 @@ use Ciebit\News\Status;
 class News
 {
     /** @var string */
+    private $authorId;
+
+    /** @var string */
     private $body;
 
     /** @var string */
@@ -45,6 +48,7 @@ class News
 
     public function __construct(string $title, Status $status)
     {
+        $this->authorId = '';
         $this->body = '';
         $this->coverId = '';
         $this->dateTime = new DateTime;
@@ -68,6 +72,11 @@ class News
     /**
      * GETs
      */
+    public function getAuthorId(): string
+    {
+        return $this->authorId;
+    }
+
     public function getBody(): string
     {
         return $this->body;
@@ -132,6 +141,12 @@ class News
     /**
      * SETs
     */
+    public function setAuthorId(string $id): self
+    {
+        $this->authorId = $id;
+        return $this;
+    }
+
     public function setBody(string $body): self
     {
         $this->body = $body;

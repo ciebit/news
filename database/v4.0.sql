@@ -4,6 +4,7 @@
 CREATE TABLE `cb_news` (
   `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `cover_id` int(10) UNSIGNED DEFAULT NULL,
+  `author_id` int(5) UNSIGNED DEFAULT NULL,
   `title` varchar(300) DEFAULT NULL,
   `summary` varchar(500) DEFAULT NULL,
   `body` text,

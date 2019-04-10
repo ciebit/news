@@ -25,8 +25,9 @@ class SqlTest extends Connection
         $database = $this->getDatabase();
         $news = $database->findOne();
         $this->assertInstanceOf(News::class, $news);
-        $this->assertEquals(1, $news->getId());
-        $this->assertEquals(1, $news->getCoverId());
+        $this->assertEquals('1', $news->getId());
+        $this->assertEquals('1', $news->getCoverId());
+        $this->assertEquals('111', $news->getAuthorId());
         $this->assertEquals('Title New 1', $news->getTitle());
         $this->assertEquals('Summary new 1', $news->getSummary());
         $this->assertEquals('Text new 1', $news->getBody());
@@ -41,6 +42,15 @@ class SqlTest extends Connection
         $this->assertEquals(2, $languageReferences[0]->getReferenceId());
         $this->assertEquals('en', $languageReferences[0]->getLanguageCode());
         $this->assertEquals(1, $news->getStatus()->getValue());
+    }
+
+    public function testFindFilterByAuthorId(): void
+    {
+        $id = '222';
+        $database = $this->getDatabase();
+        $database->addFilterByAuthorId('=', $id.'');
+        $news = $database->findOne();
+        $this->assertEquals($id, $news->getAuthorId());
     }
 
     public function testFindFilterByBody(): void

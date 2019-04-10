@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class NewsTest extends TestCase
 {
+    const AUTHOR_ID = '6';
     const COVER_ID = '5';
     const ID = '2';
     const LABELS_ID = ['3','4'];
@@ -19,12 +20,14 @@ class NewsTest extends TestCase
     {
         $news = new News(self::TITLE, new Status(self::STATUS));
         $news->setId(self::ID)
+        ->setAuthorId(self::AUTHOR_ID)
         ->setCoverId(self::COVER_ID)
         ->setLabelsId(...self::LABELS_ID);
 
         $this->assertEquals(self::ID, $news->getId());
         $this->assertEquals(self::STATUS, $news->getStatus()->getValue());
         $this->assertEquals(self::TITLE, $news->getTitle());
+        $this->assertEquals(self::AUTHOR_ID, $news->getAuthorId());
         $this->assertEquals(self::COVER_ID, $news->getCoverId());
         $this->assertEquals(self::LABELS_ID, $news->getLabelsId());
     }

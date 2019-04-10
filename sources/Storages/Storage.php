@@ -8,7 +8,7 @@ use Ciebit\News\Status;
 interface Storage
 {
     /** @var string */
-    public const FIELD_ID = 'id';
+    public const FIELD_AUTHOR_ID = 'author_id';
 
     /** @var string */
     public const FIELD_BODY = 'body';
@@ -18,6 +18,9 @@ interface Storage
 
     /** @var string */
     public const FIELD_DATETIME = 'datetime';
+
+    /** @var string */
+    public const FIELD_ID = 'id';
 
     /** @var string */
     public const FIELD_LABEL_ID = 'id';
