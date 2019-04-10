@@ -34,9 +34,7 @@
     },
     "require": {
         "php": "^7.1",
-        "ciebit/files": "^2.0",
-        "ciebit/labels": "^1.0",
-        "ciebit/stories": "^0.6.1",
+        "ciebit/sql-helper": "^1.0.0",
         "myclabs/php-enum": "^1.6.1"
     },
     "require-dev": {
