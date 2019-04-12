@@ -276,7 +276,7 @@ class Sql implements Database
 
     public function getTotalItemsOfLastFindWithoutLimitations(): int
     {
-        return $this->totalItemsLastQuery;
+        return $this->totalItemsOfLastFindWithoutLimitations;
     }
 
     public function setLimit(int $limit): Storage
