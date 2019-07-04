@@ -2,7 +2,6 @@
 namespace Ciebit\News\Storages\Database;
 
 use Ciebit\News\Collection;
-use Ciebit\News\Builders\FromArray as Builder;
 use Ciebit\News\LanguageReference;
 use Ciebit\News\News;
 use Ciebit\News\Status;
@@ -77,7 +76,7 @@ class Sql implements Database
     private $tableLabelAssociation;
 
     /** @var int */
-    private $totalItemsOfLastFindWithoutLimitations;
+    private $totalItemsOfLastFindWithoutLimit;
 
     public function __construct(PDO $pdo)
     {
@@ -85,7 +84,7 @@ class Sql implements Database
         $this->sqlHelper = new SqlHelper;
         $this->table = 'cb_news';
         $this->tableLabelAssociation = 'cb_news_labels';
-        $this->totalItemsOfLastFindWithoutLimitations = 0;
+        $this->totalItemsOfLastFindWithoutLimit = 0;
     }
 
     public function __clone()
@@ -228,7 +227,7 @@ class Sql implements Database
             throw new Exception('ciebit.news.storages.database.get_error', 2);
         }
 
-        $this->updateTotalItemsWithoutFilters();
+        $this->updateTotalItemsWithoutLimit();
 
         $collection = new Collection;
         $newsData = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -274,9 +273,9 @@ class Sql implements Database
         ";
     }
 
-    public function getTotalItemsOfLastFindWithoutLimitations(): int
+    public function getTotalItemsOfLastFindWithoutLimit(): int
     {
-        return $this->totalItemsOfLastFindWithoutLimitations;
+        return $this->totalItemsOfLastFindWithoutLimit;
     }
 
     public function setLimit(int $limit): Storage
@@ -291,21 +290,21 @@ class Sql implements Database
         return $this;
     }
 
-    public function setTable(string $name): Storage
+    public function setTable(string $name): Database
     {
         $this->table = $name;
         return $this;
     }
 
-    public function setTableLabelAssociation(string $name): Storage
+    public function setTableLabelAssociation(string $name): Database
     {
         $this->tableLabelAssociation = $name;
         return $this;
     }
 
-    private function updateTotalItemsWithoutFilters(): self
+    private function updateTotalItemsWithoutLimit(): self
     {
-        $this->totalItemsOfLastFindWithoutLimitations = $this->pdo->query('SELECT FOUND_ROWS()')->fetchColumn();
+        $this->totalItemsOfLastFindWithoutLimit = $this->pdo->query('SELECT FOUND_ROWS()')->fetchColumn();
         return $this;
     }
 }

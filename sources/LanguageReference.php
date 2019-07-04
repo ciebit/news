@@ -3,10 +3,13 @@ namespace Ciebit\News;
 
 class LanguageReference
 {
-    private $languageCode; #string
-    private $id; #id
+    /** @var string */
+    private $languageCode;
 
-    public function __construct(string $languageCode, int $id)
+    /** @var string */
+    private $id;
+
+    public function __construct(string $languageCode, string $id)
     {
         $this->languageCode = $languageCode;
         $this->id = $id;
@@ -17,7 +20,7 @@ class LanguageReference
         return $this->languageCode;
     }
 
-    public function getReferenceId(): int
+    public function getReferenceId(): string
     {
         return $this->id;
     }

@@ -70,13 +70,9 @@ interface Storage
 
     public function findOne(): ?News;
 
-    public function getTotalItemsOfLastFindWithoutLimitations(): int;
+    public function getTotalItemsOfLastFindWithoutLimit(): int;
 
     public function setLimit(int $limit): self;
 
     public function setOffset(int $offset): self;
-
-    public function setTable(string $name): self;
-
-    public function setTableLabelAssociation(string $name): self;
 }

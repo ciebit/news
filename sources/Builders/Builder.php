@@ -1,7 +1,10 @@
 <?php
 namespace Ciebit\News\Builders;
 
+use Ciebit\News\LanguageReference;
 use Ciebit\News\News;
+use Ciebit\News\Status;
+use DateTime;
 use Exception;
 
 use function is_numeric;
@@ -50,10 +53,10 @@ class Builder
         if (isset($data['languages_references'])) {
             $languageReferences = json_decode($data['languages_references'], true);
             foreach ($languageReferences as $languageCode => $id) {
-                $news->addLanguageReference(new LanguageReference($languageCode, $id));
+                $news->addLanguageReference(new LanguageReference($languageCode, (string) $id));
             }
         }
 
-        return $story;
+        return $news;
     }
 }
