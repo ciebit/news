@@ -218,6 +218,28 @@ class SqlTest extends Connection
         $this->assertEquals('4', $news->getId());
     }
 
+    public function testStore(): void
+    {
+        $news = new News('News Store Title', Status::ACTIVE());
+        $news->setAuthorId('777')
+        ->setBody('News Store Body')
+        ->setCoverId('77')
+        ->setDateTime(new DateTime('2019-07-04 17:18:00'))
+        ->setLabelsId('1', '2', '3')
+        ->setLanguage('en')
+        ->addLanguageReference(
+            new LanguageReference('pt-BR', '2'),
+            new LanguageReference('es', '3')
+        )
+        ->setSummary('News Store Summary')
+        ->setSlug('news-store-slug')
+        ;
+
+        $database = $this->getDatabase();
+        $database->store($news);
+        $this->assertTrue($news->getId() > 0);
+    }
+
     // Disabled
     public function Update(): void
     {

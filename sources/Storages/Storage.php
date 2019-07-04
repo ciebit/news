@@ -75,4 +75,7 @@ interface Storage
     public function setLimit(int $limit): self;
 
     public function setOffset(int $offset): self;
+
+    /** @throws Execption */
+    public function store(News $new): self;
 }
