@@ -37,8 +37,11 @@ class Sql implements Database
     private const COLUMN_LABEL_ID = 'id';
 
     /** @var string */
+    private const COLUMN_LABEL_IDS = 'label_ids';
+    
+    /** @var string */
     private const COLUMN_LABEL_LABEL_ID = 'label_id';
-
+    
     /** @var string */
     private const COLUMN_LABEL_NEWS_ID = 'news_id';
 
@@ -181,7 +184,11 @@ class Sql implements Database
         ->setSlug((string) $newsData[self::COLUMN_SLUG])
         ->setViews((int) $newsData[self::COLUMN_VIEWS])
         ->setLanguage((string) $newsData[self::COLUMN_LANGUAGE])
-        ->setLabelsId(...explode(',', $newsData[self::COLUMN_LABEL_ID]));
+        ;
+
+        if ($newsData[self::COLUMN_LABEL_IDS]) {
+            $news->setLabelsId(...explode(',', $newsData[self::COLUMN_LABEL_IDS]));
+        }
 
         if ($newsData[self::COLUMN_DATETIME] != null) {
             $news->setDateTime(new DateTime($newsData[self::COLUMN_DATETIME]));
@@ -205,6 +212,7 @@ class Sql implements Database
         $fieldId = self::COLUMN_ID;
         $fieldNewsId = self::COLUMN_LABEL_NEWS_ID;
         $fieldLabelId = self::COLUMN_LABEL_LABEL_ID;
+        $fieldLabelIds = self::COLUMN_LABEL_IDS;
 
         $statement = $this->pdo->prepare(
             "SELECT SQL_CALC_FOUND_ROWS
@@ -213,7 +221,7 @@ class Sql implements Database
                 SELECT GROUP_CONCAT(`{$this->tableLabelAssociation}`.`{$fieldLabelId}`)
                 FROM  `{$this->tableLabelAssociation}`
                 WHERE `{$this->tableLabelAssociation}`.`{$fieldNewsId}` = `{$this->table}`.`{$fieldId}`
-            )  as `labels_id`
+            )  as `{$fieldLabelIds}`
             FROM {$this->table}
             {$this->sqlHelper->generateSqlJoin()}
             WHERE {$this->sqlHelper->generateSqlFilters()}

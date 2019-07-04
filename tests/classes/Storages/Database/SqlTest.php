@@ -225,8 +225,8 @@ class SqlTest extends Connection
         ->setBody('News Store Body')
         ->setCoverId('77')
         ->setDateTime(new DateTime('2019-07-04 17:18:00'))
-        ->setLabelsId('1', '2', '3')
         ->setLanguage('en')
+        ->setLabelsId('1', '2', '3')
         ->addLanguageReference(
             new LanguageReference('pt-BR', '2'),
             new LanguageReference('es', '3')
@@ -238,6 +238,19 @@ class SqlTest extends Connection
         $database = $this->getDatabase();
         $database->store($news);
         $this->assertTrue($news->getId() > 0);
+
+        $newsCopy = $database->addFilterById('=', $news->getId())->findOne();
+
+        $this->assertEquals($news, $newsCopy);
+    }
+
+    public function testStoreNotLabels(): void
+    {
+        $news = new News('News Store Title 2', Status::ACTIVE());
+        $database = $this->getDatabase();
+        $database->store($news);
+        $newsCopy = $database->addFilterById('=', $news->getId())->findOne();
+        $this->assertEquals($news, $newsCopy);
     }
 
     // Disabled
