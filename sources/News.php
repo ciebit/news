@@ -2,7 +2,8 @@
 namespace Ciebit\News;
 
 use DateTime;
-use Ciebit\News\LanguageReference;
+use Ciebit\News\Languages\Collection as LanguagesCollection;
+use Ciebit\News\Languages\Reference as LanguagesReference;
 use Ciebit\News\Status;
 
 class News
@@ -28,7 +29,7 @@ class News
     /** @var string */
     private $language;
 
-    /** @var array */
+    /** @var LanguagesCollection */
     private $languageReferences;
 
     /** @var string */
@@ -55,7 +56,7 @@ class News
         $this->id = '';
         $this->labelsId = [];
         $this->language = 'pt-br';
-        $this->languageReferences = [];
+        $this->languageReferences = new LanguagesCollection;
         $this->slug = '';
         $this->status = $status;
         $this->summary = '';
@@ -63,9 +64,9 @@ class News
         $this->views = 0;
     }
 
-    public function addLanguageReference(LanguageReference $languageReference): self
+    public function addLanguageReference(LanguagesReference ...$languageReference): self
     {
-        $this->languageReferences[] = $languageReference;
+        $this->languageReferences->add(...$languageReference);
         return $this;
     }
 
@@ -132,7 +133,7 @@ class News
         return $this->language;
     }
 
-    public function getLanguageReferences(): array
+    public function getLanguageReferences(): LanguagesCollection
     {
         return $this->languageReferences;
     }

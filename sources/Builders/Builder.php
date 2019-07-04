@@ -1,7 +1,7 @@
 <?php
 namespace Ciebit\News\Builders;
 
-use Ciebit\News\LanguageReference;
+use Ciebit\News\Languages\Reference as LanguageReference;
 use Ciebit\News\News;
 use Ciebit\News\Status;
 use DateTime;

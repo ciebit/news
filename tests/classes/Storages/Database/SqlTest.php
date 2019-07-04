@@ -4,13 +4,15 @@ declare(strict_types=1);
 namespace Ciebit\News\Tests\Storages\Database;
 
 use Ciebit\News\Collection;
-use Ciebit\News\LanguageReference;
+use Ciebit\News\Languages\Collection as LanguageCollection;
+use Ciebit\News\Languages\Reference as LanguageReference;
 use Ciebit\News\Status;
 use Ciebit\News\News;
 use Ciebit\News\Storages\Database\Sql as DatabaseSql;
 use Ciebit\News\Storages\Storage;
 use Ciebit\News\Tests\Connection;
 use ArrayObject;
+use DateTime;
 
 class SqlTest extends Connection
 {
@@ -48,11 +50,12 @@ class SqlTest extends Connection
         $this->assertEquals(11, $news->getViews());
         $this->assertEquals('pt-BR', $news->getLanguage());
 
-        $languageReferences = $news->getLanguageReferences();
-        $this->assertTrue(is_array($languageReferences));
-        $this->assertInstanceOf(LanguageReference::class, $languageReferences[0]);
-        $this->assertEquals(2, $languageReferences[0]->getReferenceId());
-        $this->assertEquals('en', $languageReferences[0]->getLanguageCode());
+        $languageCollection = $news->getLanguageReferences();
+        $languageReference = $languageCollection->getArrayObject()->offsetGet(0);
+        $this->assertInstanceOf(LanguageCollection::class, $languageCollection);
+        $this->assertInstanceOf(LanguageReference::class, $languageReference);
+        $this->assertEquals(2, $languageReference->getId());
+        $this->assertEquals('en', $languageReference->getLanguageCode());
         $this->assertEquals(1, $news->getStatus()->getValue());
     }
 
