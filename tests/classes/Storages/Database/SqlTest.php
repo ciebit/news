@@ -253,16 +253,24 @@ class SqlTest extends Connection
         $this->assertEquals($news, $newsCopy);
     }
 
-    // Disabled
-    public function Update(): void
+    public function testUpdate(): void
     {
-        $id = '2';
-        $views = 13;
         $database = $this->getDatabase();
-        $database->addFilterById('=', $id.'');
+        $database->addFilterById('=', '2');
         $news = $database->findOne();
-        $news->setViews($views+0);
-        $news = $database->update($news)->get();
-        $this->assertEquals($views, $news->getStory()->getViews());
+        $news
+        ->setCoverId('22')
+        ->setAuthorId('2222')
+        ->setSummary('Summary update')
+        ->setBody('Body update')
+        ->setDateTime(new DateTime('2019-06-05 19:09:22'))
+        ->setSlug('slug-update')
+        ->setLanguage('fr')
+        ->addLanguageReference(new LanguageReference('en', '4'))
+        ->setViews(22)
+        ->setStatus(Status::ACTIVE());
+
+        $newsUpdated = $database->update($news)->findOne();
+        $this->assertEquals($news, $newsUpdated);
     }
 }
