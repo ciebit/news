@@ -1,38 +1,57 @@
 <?php
 namespace Ciebit\News\Builders;
 
-use Ciebit\News\LanguageReference;
+use Ciebit\News\Languages\Reference as LanguageReference;
 use Ciebit\News\News;
 use Ciebit\News\Status;
 use DateTime;
 use Exception;
 
 use function is_numeric;
-use function is_string;
 
 class Builder
 {
-    public function build(array $data): News
+    public static function build(array $data): News
     {
         $check = isset($data['title'])
-        && is_string($data['title'])
-        && isset($data['status'])
-        && is_numeric($data['status']);
+        && isset($data['status']);
 
         if (! $check) {
             throw new Exception('ciebit.news.builders.dataInvalid', 1);
         }
 
-        $news = new News($data['title'], new Status((int) $data['status']));
+        $status = $data['status'];
+        if (! is_object($status) || ($status instanceof Status)) {
+            $status = new Status((int) $data['status']);
+        }
 
-        isset($data['datetime'])
-        && $news->setDateTime(new DateTime($data['datetime']));
+        $news = new News($data['title'], $status);
+
+        isset($data['authorId'])
+        && $news->setAuthorId((string) $data['authorId']);
+
+        isset($data['body'])
+        && $news->setBody((string) $data['body']);
+
+        isset($data['coverId'])
+        && $news->setCoverId((string) $data['coverId']);
+
+        if (isset($data['dateTime'])) {
+            $dateTime = $data['dateTime'];
+            if (! is_object($dateTime) || ! ($dateTime instanceof DateTime)) {
+                $dateTime = new DateTime($dateTime);
+            }
+            $news->setDateTime($dateTime);
+        }
 
         isset($data['id'])
         && $news->setId((string) $data['id']);
 
-        isset($data['body'])
-        && $news->setBody((string) $data['body']);
+        isset($data['language'])
+        && $news->setLanguage($data['language']);
+
+        isset($data['slug'])
+        && $news->setSlug((string) $data['slug']);
 
         isset($data['summary'])
         && $news->setSummary((string) $data['summary']);
@@ -44,14 +63,21 @@ class Builder
         && is_numeric($data['views'])
         && $news->setViews((int) $data['views']);
 
-        isset($data['language'])
-        && $news->setLanguage($data['language']);
+        isset($data['labelsId'])
+        && !empty($data['labelsId'])
+        && is_array($data['labelsId'])
+        && $news->setLabelsId(...$data['labelsId']);
 
-        isset($data['status'])
-        && $news->setStatus(new Status((int) $data['status']));
+        if (
+            isset($data['languagesReferences'])
+            && !empty($data['languagesReferences'])
+        ) {
+            $languageReferences = $data['languagesReferences'];
 
-        if (isset($data['languages_references'])) {
-            $languageReferences = json_decode($data['languages_references'], true);
+            if (is_string($languageReferences)) {
+                $languageReferences = json_decode($languageReferences, true);
+            }
+
             foreach ($languageReferences as $languageCode => $id) {
                 $news->addLanguageReference(new LanguageReference($languageCode, (string) $id));
             }
