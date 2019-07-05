@@ -78,4 +78,7 @@ interface Storage
 
     /** @throws Execption */
     public function store(News $new): self;
+
+    /** @throws Execption */
+    public function update(News $new): self;
 }
