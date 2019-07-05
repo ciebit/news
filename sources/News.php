@@ -1,10 +1,12 @@
 <?php
 namespace Ciebit\News;
 
-use DateTime;
 use Ciebit\News\Languages\Collection as LanguagesCollection;
 use Ciebit\News\Languages\Reference as LanguagesReference;
 use Ciebit\News\Status;
+use DateTime;
+
+use function date;
 
 class News
 {
@@ -52,10 +54,10 @@ class News
         $this->authorId = '';
         $this->body = '';
         $this->coverId = '';
-        $this->dateTime = new DateTime;
+        $this->dateTime = new DateTime(date('Y-m-d H:i:s'));
         $this->id = '';
         $this->labelsId = [];
-        $this->language = 'pt-br';
+        $this->language = 'pt-BR';
         $this->languageReferences = new LanguagesCollection;
         $this->slug = '';
         $this->status = $status;
@@ -193,7 +195,6 @@ class News
     public function setStatus(Status $status): self
     {
         $this->status = $status;
-        $this->valid();
         return $this;
     }
 

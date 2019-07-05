@@ -1,6 +1,7 @@
 <?php
 namespace Ciebit\News\Storages\Database;
 
+use Ciebit\News\Builders\Builder;
 use Ciebit\News\Collection;
 use Ciebit\News\Languages\Reference as LanguageReference;
 use Ciebit\News\News;
@@ -172,36 +173,23 @@ class Sql implements Database
         return $this;
     }
 
-    public function createNews(array $newsData): News
+    private function createNews(array $newsData): News
     {
-        $status = new Status((int) $newsData[self::COLUMN_STATUS]);
-        $news = new News($newsData[self::COLUMN_TITLE], $status);
-        $news->setId($newsData[self::COLUMN_ID])
-        ->setCoverId((string) $newsData[self::COLUMN_COVER_ID])
-        ->setAuthorId((string) $newsData[self::COLUMN_AUTHOR_ID])
-        ->setBody((string) $newsData[self::COLUMN_BODY])
-        ->setSummary((string) $newsData[self::COLUMN_SUMMARY])
-        ->setSlug((string) $newsData[self::COLUMN_SLUG])
-        ->setViews((int) $newsData[self::COLUMN_VIEWS])
-        ->setLanguage((string) $newsData[self::COLUMN_LANGUAGE])
-        ;
-
-        if ($newsData[self::COLUMN_LABEL_IDS]) {
-            $news->setLabelsId(...explode(',', $newsData[self::COLUMN_LABEL_IDS]));
-        }
-
-        if ($newsData[self::COLUMN_DATETIME] != null) {
-            $news->setDateTime(new DateTime($newsData[self::COLUMN_DATETIME]));
-        }
-
-        if ($newsData[self::COLUMN_LANGUAGES_REFERENCES] != null) {
-            $languageReferences = json_decode($newsData[self::COLUMN_LANGUAGES_REFERENCES], true);
-            foreach ($languageReferences as $languageCode => $id) {
-                $news->addLanguageReference(new LanguageReference($languageCode, $id));
-            }
-        }
-
-        return $news;
+        return Builder::build([
+            'authorId' => $newsData[self::COLUMN_AUTHOR_ID],
+            'body' => $newsData[self::COLUMN_BODY],
+            'coverId' => $newsData[self::COLUMN_COVER_ID],
+            'dateTime' => $newsData[self::COLUMN_DATETIME],
+            'id' => $newsData[self::COLUMN_ID],
+            'language' => $newsData[self::COLUMN_LANGUAGE],
+            'languagesReferences' => $newsData[self::COLUMN_LANGUAGES_REFERENCES],
+            'labelsId' => $newsData[self::COLUMN_LABEL_IDS] ? explode(',', $newsData[self::COLUMN_LABEL_IDS]) : null,
+            'slug' => $newsData[self::COLUMN_SLUG],
+            'status' => $newsData[self::COLUMN_STATUS],
+            'summary' => $newsData[self::COLUMN_SUMMARY],
+            'title' => $newsData[self::COLUMN_TITLE],
+            'views' => $newsData[self::COLUMN_VIEWS],
+        ]);
     }
 
     /**
@@ -341,23 +329,63 @@ class Sql implements Database
             )"
         );
 
-        $statement->bindValue(':authorId', $news->getAuthorId(), PDO::PARAM_INT);
-        $statement->bindValue(':body', $news->getBody(), PDO::PARAM_STR);
-        $statement->bindValue(':coverId', $news->getCoverId(), PDO::PARAM_INT);
+        $languageReferences = null;
+        if ($news->getLanguageReferences()->count() > 0) {
+            $languageReferences = json_encode($news->getLanguageReferences(), JSON_FORCE_OBJECT);
+        }
+
+        $statement->bindValue(':authorId', $news->getAuthorId() ?: null, PDO::PARAM_INT);
+        $statement->bindValue(':body', $news->getBody() ?: null, PDO::PARAM_STR);
+        $statement->bindValue(':coverId', $news->getCoverId() ?: null, PDO::PARAM_INT);
         $statement->bindValue(':dateTime', $news->getDateTime()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
-        $statement->bindValue(':language', $news->getLanguage(), PDO::PARAM_STR);
-        $statement->bindValue(':languageReferences', json_encode($news->getLanguageReferences()), PDO::PARAM_STR);
-        $statement->bindValue(':slug', $news->getSlug(), PDO::PARAM_STR);
+        $statement->bindValue(':language', $news->getLanguage() ?: null, PDO::PARAM_STR);
+        $statement->bindValue(':languageReferences', $languageReferences, PDO::PARAM_STR);
+        $statement->bindValue(':slug', $news->getSlug() ?: null, PDO::PARAM_STR);
         $statement->bindValue(':status', $news->getStatus()->getValue(), PDO::PARAM_INT);
-        $statement->bindValue(':summary', $news->getSummary(), PDO::PARAM_STR);
-        $statement->bindValue(':title', $news->getTitle(), PDO::PARAM_STR);
+        $statement->bindValue(':summary', $news->getSummary() ?: null, PDO::PARAM_STR);
+        $statement->bindValue(':title', $news->getTitle() ?: null, PDO::PARAM_STR);
         $statement->bindValue(':views', $news->getViews(), PDO::PARAM_INT);
 
         if ($statement->execute() === false) {
             throw new Exception('ciebit.news.storages.database.store_error', 3);
         }
 
-        $news->setId($this->pdo->lastInsertId());
+        $id = $this->pdo->lastInsertId();
+        if (! empty($news->getLabelsId())) {
+            $this->storeLabels($id, ...$news->getLabelsId());
+        }
+        $news->setId($id);
+
+        return $this;
+    }
+
+    private function storeLabels(string $newsId, string ...$labelIds): self
+    {
+        $fields = implode('`,`', [
+            self::COLUMN_LABEL_NEWS_ID,
+            self::COLUMN_LABEL_LABEL_ID
+        ]);
+
+        $values = [];
+
+        foreach ($labelIds as $key => $labelId ) {
+            $values[] = "(:newsId, :labelId{$key})";
+        }
+
+        $statement = $this->pdo->prepare(
+            "INSERT INTO {$this->tableLabelAssociation} (`{$fields}`) 
+            VALUES ". implode(',', $values)
+        );
+
+        $statement->bindValue(':newsId', $newsId, PDO::PARAM_INT);
+
+        foreach ($labelIds as $key => $labelId) {
+            $statement->bindValue(":labelId{$key}", $labelId, PDO::PARAM_INT);
+        }
+
+        if ($statement->execute() === false) {
+            throw new Exception('ciebit.news.storages.database.store_labels_error', 4);
+        }
 
         return $this;
     }
