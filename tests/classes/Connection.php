@@ -26,7 +26,8 @@ abstract class Connection extends TestCase
         }
         $settings = $this->getSettings()['database'];
         $config = "mysql:dbname={$settings['database']};host{$settings['host']};charset=utf8";
-        return self::$pdo = new PDO($config, $settings['user'], $settings['password']);
+        self::$pdo = new PDO($config, $settings['user'], $settings['password']);
+        return self::$pdo;
     }
     final public function getConnection()
     {

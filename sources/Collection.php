@@ -23,6 +23,11 @@ class Collection implements Countable, IteratorAggregate
         return $this;
     }
 
+    public function count(): int
+    {
+        return $this->items->count();
+    }
+
     public function getArrayObject(): ArrayObject
     {
         return clone $this->items;
@@ -42,10 +47,5 @@ class Collection implements Countable, IteratorAggregate
     public function getIterator(): ArrayIterator
     {
         return $this->items->getIterator();
-    }
-
-    public function count(): int
-    {
-        return $this->items->count();
     }
 }

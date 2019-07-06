@@ -4,13 +4,15 @@ declare(strict_types=1);
 namespace Ciebit\News\Tests\Storages\Database;
 
 use Ciebit\News\Collection;
-use Ciebit\News\LanguageReference;
+use Ciebit\News\Languages\Collection as LanguageCollection;
+use Ciebit\News\Languages\Reference as LanguageReference;
 use Ciebit\News\Status;
 use Ciebit\News\News;
 use Ciebit\News\Storages\Database\Sql as DatabaseSql;
 use Ciebit\News\Storages\Storage;
 use Ciebit\News\Tests\Connection;
 use ArrayObject;
+use DateTime;
 
 class SqlTest extends Connection
 {
@@ -20,7 +22,7 @@ class SqlTest extends Connection
         return new DatabaseSql($pdo);
     }
 
-    public function testGetTotalItemsOfLastFindWithoutLimitations(): void
+    public function testGetTotalItemsOfLastFindWithoutLimit(): void
     {
         $database = $this->getDatabase();
         $news = $database
@@ -29,7 +31,7 @@ class SqlTest extends Connection
         ->findAll();
 
         $this->assertCount(1, $news);
-        $this->assertEquals(4, $database->getTotalItemsOfLastFindWithoutLimitations());
+        $this->assertEquals(4, $database->getTotalItemsOfLastFindWithoutLimit());
     }
 
     public function testFind(): void
@@ -48,11 +50,12 @@ class SqlTest extends Connection
         $this->assertEquals(11, $news->getViews());
         $this->assertEquals('pt-BR', $news->getLanguage());
 
-        $languageReferences = $news->getLanguageReferences();
-        $this->assertTrue(is_array($languageReferences));
-        $this->assertInstanceOf(LanguageReference::class, $languageReferences[0]);
-        $this->assertEquals(2, $languageReferences[0]->getReferenceId());
-        $this->assertEquals('en', $languageReferences[0]->getLanguageCode());
+        $languageCollection = $news->getLanguageReferences();
+        $languageReference = $languageCollection->getArrayObject()->offsetGet(0);
+        $this->assertInstanceOf(LanguageCollection::class, $languageCollection);
+        $this->assertInstanceOf(LanguageReference::class, $languageReference);
+        $this->assertEquals(2, $languageReference->getId());
+        $this->assertEquals('en', $languageReference->getLanguageCode());
         $this->assertEquals(1, $news->getStatus()->getValue());
     }
 
@@ -215,16 +218,67 @@ class SqlTest extends Connection
         $this->assertEquals('4', $news->getId());
     }
 
-    // Disabled
-    public function Update(): void
+    public function testDestroy(): void
     {
-        $id = '2';
-        $views = 13;
         $database = $this->getDatabase();
-        $database->addFilterById('=', $id.'');
+        $news = $database->addFilterById('=', '1')->findOne();
+        $database->destroy($news);
+        $this->assertNull($database->findOne());
+    }
+
+    public function testStore(): void
+    {
+        $news = new News('News Store Title', Status::ACTIVE());
+        $news->setAuthorId('777')
+        ->setBody('News Store Body')
+        ->setCoverId('77')
+        ->setDateTime(new DateTime('2019-07-04 17:18:00'))
+        ->setLanguage('en')
+        ->setLabelsId('1', '2', '3')
+        ->addLanguageReference(
+            new LanguageReference('pt-BR', '2'),
+            new LanguageReference('es', '3')
+        )
+        ->setSummary('News Store Summary')
+        ->setSlug('news-store-slug')
+        ;
+
+        $database = $this->getDatabase();
+        $database->store($news);
+        $this->assertTrue($news->getId() > 0);
+
+        $newsCopy = $database->addFilterById('=', $news->getId())->findOne();
+
+        $this->assertEquals($news, $newsCopy);
+    }
+
+    public function testStoreNotLabels(): void
+    {
+        $news = new News('News Store Title 2', Status::ACTIVE());
+        $database = $this->getDatabase();
+        $database->store($news);
+        $newsCopy = $database->addFilterById('=', $news->getId())->findOne();
+        $this->assertEquals($news, $newsCopy);
+    }
+
+    public function testUpdate(): void
+    {
+        $database = $this->getDatabase();
+        $database->addFilterById('=', '2');
         $news = $database->findOne();
-        $news->setViews($views+0);
-        $news = $database->update($news)->get();
-        $this->assertEquals($views, $news->getStory()->getViews());
+        $news
+        ->setCoverId('22')
+        ->setAuthorId('2222')
+        ->setSummary('Summary update')
+        ->setBody('Body update')
+        ->setDateTime(new DateTime('2019-06-05 19:09:22'))
+        ->setSlug('slug-update')
+        ->setLanguage('fr')
+        ->addLanguageReference(new LanguageReference('en', '4'))
+        ->setViews(22)
+        ->setStatus(Status::ACTIVE());
+
+        $newsUpdated = $database->update($news)->findOne();
+        $this->assertEquals($news, $newsUpdated);
     }
 }

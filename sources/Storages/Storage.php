@@ -66,17 +66,24 @@ interface Storage
 
     public function addFilterByTitle(string $operator, string ...$title): self;
 
+    /** @throws Execption */
+    public function destroy(News $news): self;
+
+    /** @throws Execption */
     public function findAll(): Collection;
 
+    /** @throws Execption */
     public function findOne(): ?News;
 
-    public function getTotalItemsOfLastFindWithoutLimitations(): int;
+    public function getTotalItemsOfLastFindWithoutLimit(): int;
 
     public function setLimit(int $limit): self;
 
     public function setOffset(int $offset): self;
 
-    public function setTable(string $name): self;
+    /** @throws Execption */
+    public function store(News $new): self;
 
-    public function setTableLabelAssociation(string $name): self;
+    /** @throws Execption */
+    public function update(News $new): self;
 }
