@@ -25,7 +25,7 @@ abstract class Connection extends TestCase
             return self::$pdo;
         }
         $settings = $this->getSettings()['database'];
-        $config = "mysql:dbname={$settings['database']};host{$settings['host']};charset=utf8";
+        $config = "mysql:dbname={$settings['database']};host={$settings['host']};charset=utf8";
         self::$pdo = new PDO($config, $settings['user'], $settings['password']);
         return self::$pdo;
     }
