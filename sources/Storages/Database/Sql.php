@@ -218,6 +218,31 @@ class Sql implements Database
     /**
      * @throws Exception
      */
+    public function destroy(News $news): Storage
+    {
+        $statement = $this->pdo->prepare(
+            "DELETE FROM {$this->table} WHERE `id` = :id"
+        );
+        $statement->bindValue(':id', $news->getId(), PDO::PARAM_INT);
+
+        $this->pdo->beginTransaction();
+
+        if (!$statement->execute()) {
+            throw new Exception('ciebit.news.storages.database.destroy', 6);
+        }
+
+        $this->destroyLabels($news->getId());
+
+        $this->pdo->commit();
+
+        $news->setId('');
+
+        return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
     private function destroyLabels(string $newsId): self
     {
         $fieldNewsId = self::COLUMN_LABEL_NEWS_ID;
@@ -229,7 +254,7 @@ class Sql implements Database
         $statement->bindValue(':id', $newsId, PDO::PARAM_INT);
 
         if (!$statement->execute()) {
-            throw new Exception('ciebit.news.storages.database.destroy', 5);
+            throw new Exception('ciebit.news.storages.database.destroy_labels', 5);
         }
 
         return $this;
@@ -464,7 +489,7 @@ class Sql implements Database
         $this->pdo->beginTransaction();
 
         if ($statement->execute() === false) {
-            throw new Exception('ciebit.news.storages.database.update_error', 4);
+            throw new Exception('ciebit.news.storages.database.update_error', 7);
         }
 
         $this->destroyLabels($news->getId());

@@ -218,6 +218,14 @@ class SqlTest extends Connection
         $this->assertEquals('4', $news->getId());
     }
 
+    public function testDestroy(): void
+    {
+        $database = $this->getDatabase();
+        $news = $database->addFilterById('=', '1')->findOne();
+        $database->destroy($news);
+        $this->assertNull($database->findOne());
+    }
+
     public function testStore(): void
     {
         $news = new News('News Store Title', Status::ACTIVE());

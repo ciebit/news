@@ -66,8 +66,13 @@ interface Storage
 
     public function addFilterByTitle(string $operator, string ...$title): self;
 
+    /** @throws Execption */
+    public function destroy(News $news): self;
+
+    /** @throws Execption */
     public function findAll(): Collection;
 
+    /** @throws Execption */
     public function findOne(): ?News;
 
     public function getTotalItemsOfLastFindWithoutLimit(): int;
