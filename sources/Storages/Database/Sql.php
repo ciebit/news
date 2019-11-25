@@ -271,7 +271,7 @@ class Sql implements Database
         $fieldLabelIds = self::COLUMN_LABEL_IDS;
 
         $statement = $this->pdo->prepare(
-            "SELECT SQL_CALC_FOUND_ROWS
+            "SELECT SQL_CALC_FOUND_ROWS DISTINCT
             {$this->getFields()},
             (
                 SELECT GROUP_CONCAT(`{$this->tableLabelAssociation}`.`{$fieldLabelId}`)

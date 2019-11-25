@@ -111,6 +111,16 @@ class SqlTest extends Connection
         $this->assertEquals($id, $news->getArrayObject()->offsetGet(0)->getLabelsId()[0]);
     }
 
+    public function testFindFilterByLabelIdBugMultiples(): void
+    {
+        $ids = ['1', '2', '3'];
+        $database = $this->getDatabase();
+        $database->addFilterById('=', '1');
+        $database->addFilterByLabelId('=', ...$ids);
+        $newsCollection = $database->findAll();
+        $this->assertCount(1, $newsCollection);
+    }
+
     public function testFindFilterByLanguage(): void
     {
         $database = $this->getDatabase();
