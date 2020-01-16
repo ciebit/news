@@ -66,6 +66,8 @@ interface Storage
 
     public function addFilterByTitle(string $operator, string ...$title): self;
 
+    public function addOrderBy(string $field, string $direction): self;
+
     /** @throws Execption */
     public function destroy(News $news): self;
 
