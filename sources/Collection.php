@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Ciebit\News;
 
 use ArrayIterator;
@@ -6,11 +9,11 @@ use ArrayObject;
 use Ciebit\News\News;
 use Countable;
 use IteratorAggregate;
+use JsonSerializable;
 
-class Collection implements Countable, IteratorAggregate
+class Collection implements Countable, IteratorAggregate, JsonSerializable
 {
-    /** @var ArrayObject */
-    private $items;
+    private ArrayObject $items;
 
     public function __construct()
     {
@@ -47,5 +50,10 @@ class Collection implements Countable, IteratorAggregate
     public function getIterator(): ArrayIterator
     {
         return $this->items->getIterator();
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->getArrayObject()->getArrayCopy();
     }
 }

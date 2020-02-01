@@ -1,9 +1,9 @@
 <?php
 namespace Ciebit\News\Storages\Database;
 
-use Ciebit\News\Builders\Builder;
 use Ciebit\News\Collection;
 use Ciebit\News\Languages\Reference as LanguageReference;
+use Ciebit\News\Languages\Collection as LanguageReferenceCollection;
 use Ciebit\News\News;
 use Ciebit\News\Status;
 use Ciebit\News\Storages\Database\Database;
@@ -20,68 +20,28 @@ use function intval;
 
 class Sql implements Database
 {
-    /** @var string */
     private const COLUMN_AUTHOR_ID = 'author_id';
-
-    /** @var string */
     private const COLUMN_BODY = 'body';
-
-    /** @var string */
     private const COLUMN_COVER_ID = 'cover_id';
-
-    /** @var string */
     private const COLUMN_DATETIME = 'datetime';
-
-    /** @var string */
     private const COLUMN_ID = 'id';
-
-    /** @var string */
     private const COLUMN_LABEL_ID = 'id';
-
-    /** @var string */
     private const COLUMN_LABEL_IDS = 'label_ids';
-    
-    /** @var string */
     private const COLUMN_LABEL_LABEL_ID = 'label_id';
-    
-    /** @var string */
     private const COLUMN_LABEL_NEWS_ID = 'news_id';
-
-    /** @var string */
     private const COLUMN_LANGUAGE = 'language';
-
-    /** @var string */
     private const COLUMN_LANGUAGES_REFERENCES = 'languages_references';
-
-    /** @var string */
     private const COLUMN_SLUG = 'slug';
-
-    /** @var string */
     private const COLUMN_STATUS = 'status';
-
-    /** @var string */
     private const COLUMN_SUMMARY = 'summary';
-
-    /** @var string */
     private const COLUMN_TITLE = 'title';
-
-    /** @var string */
     private const COLUMN_VIEWS = 'views';
 
-    /** @var PDO */
-    private $pdo;
-
-    /** @var SqlHelper */
-    private $sqlHelper;
-
-    /** @var string */
-    private $table;
-
-    /** @var string */
-    private $tableLabelAssociation;
-
-    /** @var int */
-    private $totalItemsOfLastFindWithoutLimit;
+    private PDO $pdo; 
+    private SqlHelper $sqlHelper;
+    private string $table;
+    private string $tableLabelAssociation; 
+    private int $totalItemsOfLastFindWithoutLimit; 
 
     public function __construct(PDO $pdo)
     {
@@ -198,21 +158,29 @@ class Sql implements Database
 
     private function createNews(array $newsData): News
     {
-        return Builder::build([
-            'authorId' => $newsData[self::COLUMN_AUTHOR_ID],
-            'body' => $newsData[self::COLUMN_BODY],
-            'coverId' => $newsData[self::COLUMN_COVER_ID],
-            'dateTime' => $newsData[self::COLUMN_DATETIME],
-            'id' => $newsData[self::COLUMN_ID],
-            'language' => $newsData[self::COLUMN_LANGUAGE],
-            'languagesReferences' => $newsData[self::COLUMN_LANGUAGES_REFERENCES],
-            'labelsId' => $newsData[self::COLUMN_LABEL_IDS] ? explode(',', $newsData[self::COLUMN_LABEL_IDS]) : null,
-            'slug' => $newsData[self::COLUMN_SLUG],
-            'status' => $newsData[self::COLUMN_STATUS],
-            'summary' => $newsData[self::COLUMN_SUMMARY],
-            'title' => $newsData[self::COLUMN_TITLE],
-            'views' => $newsData[self::COLUMN_VIEWS],
-        ]);
+        $languageReferenceCollection = new LanguageReferenceCollection;
+        $languageReferences = json_decode((string) $newsData[self::COLUMN_LANGUAGES_REFERENCES], true);
+        if (is_array($languageReferences)) {
+            foreach ($languageReferences as $languageCode => $id) {
+                $languageReferenceCollection->add(new LanguageReference((string) $languageCode, (string) $id));
+            }
+        }
+
+        return new News(
+            (string) $newsData[self::COLUMN_TITLE],
+            (string) $newsData[self::COLUMN_SUMMARY],
+            (string) $newsData[self::COLUMN_BODY],
+            (string) $newsData[self::COLUMN_SLUG],
+            new DateTime($newsData[self::COLUMN_DATETIME]),
+            (string) $newsData[self::COLUMN_LANGUAGE],
+            $languageReferenceCollection,
+            new Status((int) $newsData[self::COLUMN_STATUS]),
+            (string) $newsData[self::COLUMN_COVER_ID],
+            (string) $newsData[self::COLUMN_AUTHOR_ID],
+            (string) $newsData[self::COLUMN_VIEWS],
+            strlen($newsData[self::COLUMN_LABEL_IDS]) > 0 ? explode(',', $newsData[self::COLUMN_LABEL_IDS]) : [],
+            (string) $newsData[self::COLUMN_ID],
+        );
     }
 
     /**
@@ -234,8 +202,6 @@ class Sql implements Database
         $this->destroyLabels($news->getId());
 
         $this->pdo->commit();
-
-        $news->setId('');
 
         return $this;
     }
@@ -263,7 +229,7 @@ class Sql implements Database
     /**
      * @throws Exception
     */
-    public function findAll(): Collection
+    public function find(): Collection
     {
         $fieldId = self::COLUMN_ID;
         $fieldNewsId = self::COLUMN_LABEL_NEWS_ID;
@@ -305,18 +271,6 @@ class Sql implements Database
         }
 
         return $collection;
-    }
-
-    public function findOne(): ?News
-    {
-        $storage = clone $this;
-        $newsCollection = $storage->setLimit(1)->findAll();
-
-        if (count($newsCollection) == 0) {
-            return null;
-        }
-
-        return $newsCollection->getArrayObject()->offsetGet(0);
     }
 
     private function getFields(): string
@@ -368,8 +322,9 @@ class Sql implements Database
 
     /**
      * @throws Exception
+     * @return string Id
      */
-    public function store(News $news): Storage
+    public function store(News $news): string
     {
         $fields = implode('`,`', [
             self::COLUMN_AUTHOR_ID,
@@ -412,9 +367,7 @@ class Sql implements Database
 
         $this->pdo->commit();
 
-        $news->setId($id);
-
-        return $this;
+        return $id;
     }
 
     private function storeLabels(string $newsId, string ...$labelIds): self

@@ -1,80 +1,64 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Ciebit\News;
 
 use Ciebit\News\Languages\Collection as LanguagesCollection;
 use Ciebit\News\Languages\Reference as LanguagesReference;
 use Ciebit\News\Status;
 use DateTime;
+use JsonSerializable;
 
-use function date;
+use function array_map;
+use function strval;
 
-class News
+class News implements JsonSerializable
 {
-    /** @var string */
-    private $authorId;
+    private string $authorId;
+    private string $body;
+    private string $coverId;
+    private DateTime $dateTime;
+    private string $id;
+    private array $labelsId;
+    private string $language;
+    private LanguagesCollection $languageReferences;
+    private string $slug;
+    private Status $status;
+    private string $summary;
+    private string $title;
+    private int $views;
 
-    /** @var string */
-    private $body;
-
-    /** @var string */
-    private $coverId;
-
-    /** @var DateTime */
-    private $dateTime;
-
-    /** @var string */
-    private $id;
-
-    /** @var array */
-    private $labelsId;
-
-    /** @var string */
-    private $language;
-
-    /** @var LanguagesCollection */
-    private $languageReferences;
-
-    /** @var string */
-    private $slug;
-
-    /** @var Status */
-    private $status;
-
-    /** @var string */
-    private $summary;
-
-    /** @var string */
-    private $title;
-
-    /** @var int */
-    private $views;
-
-    public function __construct(string $title, Status $status)
-    {
-        $this->authorId = '';
-        $this->body = '';
-        $this->coverId = '';
-        $this->dateTime = new DateTime(date('Y-m-d H:i:s'));
-        $this->id = '';
-        $this->labelsId = [];
-        $this->language = 'pt-BR';
-        $this->languageReferences = new LanguagesCollection;
-        $this->slug = '';
+    public function __construct(
+        string $title, 
+        string $summary, 
+        string $body, 
+        string $slug, 
+        DateTime $dateTime,
+        string $language, 
+        LanguagesCollection $languageReferences, 
+        Status $status,
+        string $coverId = '',
+        string $authorId = '',
+        int $views = 0,
+        array $labelsId = [],
+        string $id = ''
+    ) {
+        $this->authorId = $authorId;
+        $this->body = $body;
+        $this->coverId = $coverId;
+        $this->dateTime = $dateTime;
+        $this->id = $id;
+        $this->labelsId = array_map('strval', $labelsId);
+        $this->language = $language;
+        $this->languageReferences = $languageReferences;
+        $this->slug = $slug;
         $this->status = $status;
-        $this->summary = '';
+        $this->summary = $summary;
         $this->title = $title;
-        $this->views = 0;
+        $this->views = $views;
     }
-
-    public function addLanguageReference(LanguagesReference ...$languageReference): self
-    {
-        $this->languageReferences->add(...$languageReference);
-        return $this;
-    }
-
-    /**
-     * GETs
-     */
+    
     public function getAuthorId(): string
     {
         return $this->authorId;
@@ -92,7 +76,7 @@ class News
 
     public function getDateTime(): DateTime
     {
-        return $this->dateTime;
+        return clone $this->dateTime;
     }
 
     public function getId(): string
@@ -137,76 +121,25 @@ class News
 
     public function getLanguageReferences(): LanguagesCollection
     {
-        return $this->languageReferences;
+        return clone $this->languageReferences;
     }
 
-
-    /**
-     * SETs
-    */
-    public function setAuthorId(string $id): self
+    public function jsonSerialize(): array
     {
-        $this->authorId = $id;
-        return $this;
-    }
-
-    public function setBody(string $body): self
-    {
-        $this->body = $body;
-        return $this;
-    }
-
-    public function setCoverId(string $id): self
-    {
-        $this->coverId = $id;
-        return $this;
-    }
-
-    public function setDateTime(DateTime $dateTime): self
-    {
-        $this->dateTime = $dateTime;
-        return $this;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function setLabelsId(string ...$ids): self
-    {
-        $this->labelsId = $ids;
-        return $this;
-    }
-
-    public function setLanguage(string $language): self
-    {
-        $this->language = $language;
-        return $this;
-    }
-
-    public function setSlug(string $slug): self
-    {
-        $this->slug = $slug;
-        return $this;
-    }
-
-    public function setStatus(Status $status): self
-    {
-        $this->status = $status;
-        return $this;
-    }
-
-    public function setSummary(string $summary): self
-    {
-        $this->summary = $summary;
-        return $this;
-    }
-
-    public function setViews(int $total): self
-    {
-        $this->views = $total;
-        return $this;
+        return [
+            'authorId' => $this->getAuthorId(),
+            'body' => $this->getBody(),
+            'coverId' => $this->getCoverId(),
+            'dateTime' => $this->getDateTime()->format('Y-m-d H:i:s'),
+            'id' => $this->getId(),
+            'labelsId' => $this->getLabelsId(),
+            'language' => $this->getLanguage(),
+            'languageReferences' => $this->getLanguageReferences(),
+            'slug' => $this->getSlug(),
+            'status' => $this->getStatus(),
+            'summary' => $this->getSummary(),
+            'title' => $this->getTitle(),
+            'views' => $this->getViews(),
+        ];
     }
 }

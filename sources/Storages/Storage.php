@@ -72,10 +72,7 @@ interface Storage
     public function destroy(News $news): self;
 
     /** @throws Execption */
-    public function findAll(): Collection;
-
-    /** @throws Execption */
-    public function findOne(): ?News;
+    public function find(): Collection;
 
     public function getTotalItemsOfLastFindWithoutLimit(): int;
 
@@ -83,8 +80,11 @@ interface Storage
 
     public function setOffset(int $offset): self;
 
-    /** @throws Execption */
-    public function store(News $new): self;
+    /**
+     * @throws Exception
+     * @return string Id
+     */
+    public function store(News $new): string;
 
     /** @throws Execption */
     public function update(News $new): self;

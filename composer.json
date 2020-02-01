@@ -33,7 +33,7 @@
         }
     },
     "require": {
-        "php": "^7.1",
+        "php": "^7.4",
         "ciebit/sql-helper": "^1.0.0",
         "myclabs/php-enum": "^1.6.1"
     },

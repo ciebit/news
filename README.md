@@ -11,16 +11,20 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Ciebit\News\News;
 use Ciebit\News\Status;
+use Ciebit\News\Factory\NewsFactory;
 use Ciebit\News\Storages\Database\Sql;
 use PDO;
 
-$news = News('Title News', Status::ACTIVE());
-$news->setBody('Text');
+$news = (news NewsFactory)
+    ->setTitle('Title News')
+    ->setStatus(Status::ACTIVE())
+    ->setBody('Text')
+    ->create();
 
 $database = new Sql(new PDO('mysql:dbname=cb_news;host=localhost;charset=utf8', 'user', 'password'));
-$database->store($news);
+$id = $database->store($news);
 
-echo $news->getId();
+echo $id;
 ```
 
 ## Exemplo de Busca de uma notícia pelo ID
@@ -34,9 +38,9 @@ use Ciebit\News\Storages\Database\Sql;
 use PDO;
 
 $database = new Sql(new PDO('mysql:dbname=cb_news;host=localhost;charset=utf8', 'user', 'password'));
-$news = $database->addFilterById('=', '1')->findOne();
+$newsCollection = $database->addFilterById('=', '1')->find();
 
-echo $news->getTitle();
+echo $newsCollection->getArrayObject()->offsetGet(0)->getTitle();
 
 ```
 
@@ -53,7 +57,7 @@ use DateTime;
 use PDO;
 
 $database = new Sql(new PDO('mysql:dbname=cb_news;host=localhost;charset=utf8', 'user', 'password'));
-$newsCollection = $database->addFilterByDateTime('>', new DateTime('2019-07-06'))->findAll();
+$newsCollection = $database->addFilterByDateTime('>', new DateTime('2019-07-06'))->find();
 
 foreach($newsCollection as $news) {
     echo $news->getTitle() . PHP_EOL;
